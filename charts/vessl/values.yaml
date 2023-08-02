@@ -1,0 +1,305 @@
+agent:
+  accessToken: # required
+  clusterName:
+  ingressEndpoint: # To be deprecated
+  imagePullPolicy:
+  apiServer: https://api.vessl.ai
+  logLevel: info
+  env: prod
+  image: "quay.io/vessl-ai/cluster-agent:0.6.16"
+  sentryDsn: https://0481c31171114c109ac911ac947f0518@o386227.ingest.sentry.io/5585090
+  nodeSelector: {}
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      operator: "Equal"
+      value: ""
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Equal"
+      value: ""
+      effect: "NoSchedule"
+    - key: "v1.k8s.vessl.ai/dedicated"
+      operator: "Exists"
+      effect: "NoSchedule"
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/master"
+                operator: "In"
+                values: [""]
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/control-plane"
+                operator: "In"
+                values: [""]
+        - weight: 2
+          preference:
+            matchExpressions:
+              - key: "v1.k8s.vessl.ai/dedicated"
+                operator: "In"
+                values: ["manager"]
+
+# https://github.com/NVIDIA/k8s-device-plugin/tree/main/deployments/helm/nvidia-device-plugin
+nvidia-device-plugin:
+  enabled: true
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              # On discrete-GPU based systems NFD adds the following lable where 10de is te NVIDIA PCI vendor ID
+              - key: "feature.node.kubernetes.io/pci-10de.present"
+                operator: "In"
+                values:
+                  - "true"
+          - matchExpressions:
+              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+                operator: "In"
+                values:
+                  - "NVIDIA"
+          - matchExpressions:
+              # We allow a GFD deployment to be forced by setting the following label to "true"
+              - key: "nvidia.com/gpu.present"
+                operator: In
+                values:
+                  - "true"
+
+# https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
+nfd:
+  enabled: true
+  master:
+    tolerations:
+      - operator: "Exists"
+        effect: "NoSchedule"
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/master"
+                  operator: "In"
+                  values: [""]
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/control-plane"
+                  operator: "In"
+                  values: [""]
+          - weight: 2
+            preference:
+              matchExpressions:
+                - key: "v1.k8s.vessl.ai/dedicated"
+                  operator: "In"
+                  values: ["manager"]
+    config:
+      extraLabelNs: ["nvidia.com"]
+  worker:
+    tolerations:
+      - operator: "Exists"
+        effect: "NoSchedule"
+    config:
+      sources:
+        pci:
+          deviceClassWhitelist:
+            - "02"
+            - "0200"
+            - "0207"
+            - "0300"
+            - "0302"
+          deviceLabelFields:
+            - "vendor"
+
+# https://github.com/NVIDIA/gpu-feature-discovery/tree/main/deployments/helm/gpu-feature-discovery
+gfd:
+  enabled: true
+  tolerations:
+     - operator: "Exists"
+       effect: "NoSchedule"
+
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
+kube-state-metrics:
+  enabled: true
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      operator: "Equal"
+      value: ""
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Equal"
+      value: ""
+      effect: "NoSchedule"
+    - key: "v1.k8s.vessl.ai/dedicated"
+      operator: "Exists"
+      effect: "NoSchedule"
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/master"
+                operator: "In"
+                values: [""]
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/control-plane"
+                operator: "In"
+                values: [""]
+        - weight: 2
+          preference:
+            matchExpressions:
+              - key: "v1.k8s.vessl.ai/dedicated"
+                operator: "In"
+                values: ["manager"]
+
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-node-exporter
+node-exporter:
+  enabled: true
+
+# https://github.com/NVIDIA/dcgm-exporter/tree/main/deployment
+dcgm-exporter:
+  enabled: true
+  serviceMonitor:
+    enabled: false
+  tolerations:
+    - operator: "Exists"
+      effect: "NoSchedule"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              # On discrete-GPU based systems NFD adds the following lable where 10de is te NVIDIA PCI vendor ID
+              - key: "feature.node.kubernetes.io/pci-10de.present"
+                operator: "In"
+                values:
+                  - "true"
+          - matchExpressions:
+              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+                operator: "In"
+                values:
+                  - "NVIDIA"
+          - matchExpressions:
+              # We allow a GFD deployment to be forced by setting the following label to "true"
+              - key: "nvidia.com/gpu.present"
+                operator: In
+                values:
+                  - "true"
+
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus
+prometheus-remote-write:
+  enabled: true
+  server:
+    # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
+    remoteWrite:
+      - name: "vessl-remote-write"
+        url: "https://remote-write-gateway.vessl.ai/remote-write"
+        authorization:
+          type: "Token"
+          credentials_file: "/etc/secrets/access-token"
+        write_relabel_configs:
+          - action: "labeldrop"
+            regex: "feature_node_kubernetes_io_(.+)"
+          - action: "labeldrop"
+            regex: "label_feature_node_kubernetes_io_(.+)"
+          - action: "labeldrop"
+            regex: "minikube_(.+)"
+    extraSecretMounts:
+     - name: "access-token"
+       secretName: "vessl-agent"
+       mountPath: "/etc/secrets"
+       readOnly: true
+    tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Equal"
+        value: ""
+        effect: "NoSchedule"
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Equal"
+        value: ""
+        effect: "NoSchedule"
+      - key: "v1.k8s.vessl.ai/dedicated"
+        operator: "Exists"
+        effect: "NoSchedule"
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/master"
+                  operator: "In"
+                  values: [""]
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/control-plane"
+                  operator: "In"
+                  values: [""]
+          - weight: 2
+            preference:
+              matchExpressions:
+                - key: "v1.k8s.vessl.ai/dedicated"
+                  operator: "In"
+                  values: ["manager"]
+  alertmanager:
+    enabled: false
+  kube-state-metrics:
+    enabled: false
+  prometheus-node-exporter:
+    enabled: false
+  prometheus-pushgateway:
+    enabled: false
+
+# https://github.com/rancher/local-path-provisioner/tree/master/deploy/chart/local-path-provisioner
+local-path-provisioner:
+  enabled: true
+  storageClass:
+    name: "vessl-local"
+    provisionerName: "rancher.io/local-path"
+  helperImage:
+    repository: "quay.io/vessl-ai/busybox"
+    tag: "21.10"
+  tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Equal"
+        value: ""
+        effect: "NoSchedule"
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Equal"
+        value: ""
+        effect: "NoSchedule"
+      - key: "v1.k8s.vessl.ai/dedicated"
+        operator: "Exists"
+        effect: "NoSchedule"
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/master"
+                operator: "In"
+                values: [""]
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/control-plane"
+                operator: "In"
+                values: [""]
+        - weight: 2
+          preference:
+            matchExpressions:
+              - key: "v1.k8s.vessl.ai/dedicated"
+                operator: "In"
+                values: ["manager"]
+
+# harbor
