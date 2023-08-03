@@ -169,6 +169,9 @@ node-exporter:
 # https://github.com/NVIDIA/dcgm-exporter/tree/main/deployment
 dcgm-exporter:
   enabled: true
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
   serviceMonitor:
     enabled: false
   kubeletPath: "/var/lib/k0s/kubelet/pod-resources"
