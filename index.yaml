@@ -3,6 +3,52 @@ entries:
   vessl:
   - apiVersion: v2
     appVersion: 0.6.17
+    created: "2023-08-03T20:42:48.622905+09:00"
+    dependencies:
+    - alias: nfd
+      condition: nfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.13.3
+    - alias: gfd
+      condition: gfd.enabled
+      name: gpu-feature-discovery
+      repository: https://nvidia.github.io/gpu-feature-discovery
+      version: 0.8.1
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.10.1
+    - alias: node-exporter
+      condition: node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.21.0
+    - condition: dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 3.1.5
+    - condition: nvidia-device-plugin.enabled
+      name: nvidia-device-plugin
+      repository: https://nvidia.github.io/k8s-device-plugin
+      version: 0.14.1
+    - alias: prometheus-remote-write
+      condition: prometheus-remote-write.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 23.2.0
+    - condition: local-path-provisioner.enabled
+      name: local-path-provisioner
+      repository: ""
+      version: 0.0.24
+    digest: b53a68bac99e8e2abc2e5b2083cc0247c0c1c7f393f9a80af78ea72c8e227848
+    name: vessl
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
+    appVersion: 0.6.17
     created: "2023-08-03T19:30:43.90414+09:00"
     dependencies:
     - alias: nfd
@@ -47,50 +93,4 @@ entries:
     urls:
     - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.3.tgz
     version: 0.0.3
-  - apiVersion: v2
-    appVersion: 0.6.17
-    created: "2023-08-03T19:29:55.241593+09:00"
-    dependencies:
-    - alias: nfd
-      condition: nfd.enabled
-      name: node-feature-discovery
-      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
-      version: 0.13.3
-    - alias: gfd
-      condition: gfd.enabled
-      name: gpu-feature-discovery
-      repository: https://nvidia.github.io/gpu-feature-discovery
-      version: 0.8.1
-    - condition: kube-state-metrics.enabled
-      name: kube-state-metrics
-      repository: https://prometheus-community.github.io/helm-charts
-      version: 5.10.1
-    - alias: node-exporter
-      condition: node-exporter.enabled
-      name: prometheus-node-exporter
-      repository: https://prometheus-community.github.io/helm-charts
-      version: 4.21.0
-    - condition: dcgm-exporter.enabled
-      name: dcgm-exporter
-      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
-      version: 3.1.5
-    - condition: nvidia-device-plugin.enabled
-      name: nvidia-device-plugin
-      repository: https://nvidia.github.io/k8s-device-plugin
-      version: 0.14.1
-    - alias: prometheus-remote-write
-      condition: prometheus-remote-write.enabled
-      name: prometheus
-      repository: https://prometheus-community.github.io/helm-charts
-      version: 23.2.0
-    - condition: local-path-provisioner.enabled
-      name: local-path-provisioner
-      repository: ""
-      version: 0.0.24
-    digest: 0d08980cdc8ac2e5326b84a4216d125d29078c5da598ff0be5843db3b3b163d7
-    name: vessl
-    type: application
-    urls:
-    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.2.tgz
-    version: 0.0.2
-generated: "2023-08-03T19:30:43.894318+09:00"
+generated: "2023-08-03T20:42:48.613745+09:00"
