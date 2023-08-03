@@ -171,6 +171,7 @@ dcgm-exporter:
   enabled: true
   serviceMonitor:
     enabled: false
+  kubeletPath: "/var/lib/k0s/kubelet/pod-resources"
   tolerations:
     - operator: "Exists"
       effect: "NoSchedule"
