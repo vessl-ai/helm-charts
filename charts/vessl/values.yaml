@@ -6,7 +6,7 @@ agent:
   apiServer: https://api.vessl.ai
   logLevel: info
   env: prod
-  image: "quay.io/vessl-ai/cluster-agent:0.6.16"
+  image: "quay.io/vessl-ai/cluster-agent:0.6.17"
   sentryDsn: https://0481c31171114c109ac911ac947f0518@o386227.ingest.sentry.io/5585090
   ingressEndpoint: # To be deprecated
   nodeSelector: {}
