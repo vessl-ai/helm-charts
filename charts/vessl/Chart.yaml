@@ -1,0 +1,41 @@
+apiVersion: v2
+name: vessl
+type: application
+version: 0.0.1
+appVersion: "0.6.15"
+dependencies:
+- name: node-feature-discovery
+  version: "0.13.3"
+  alias: nfd
+  condition: nfd.enabled
+  repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+- name: gpu-feature-discovery
+  version: "0.8.1"
+  alias: gfd
+  condition: gfd.enabled
+  repository: https://nvidia.github.io/gpu-feature-discovery
+- name: kube-state-metrics
+  version: 5.10.1
+  condition: kube-state-metrics.enabled
+  repository: https://prometheus-community.github.io/helm-charts
+- name: prometheus-node-exporter
+  alias: node-exporter
+  version: "4.21.0"
+  condition: node-exporter.enabled
+  repository: https://prometheus-community.github.io/helm-charts
+- name: dcgm-exporter
+  version: "3.1.5"
+  condition: dcgm-exporter.enabled
+  repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+- name: nvidia-device-plugin
+  version: "0.14.1"
+  condition: nvidia-device-plugin.enabled
+  repository: https://nvidia.github.io/k8s-device-plugin
+- name: prometheus
+  alias: prometheus-remote-write
+  version: "23.2.0"
+  condition: prometheus-remote-write.enabled
+  repository: https://prometheus-community.github.io/helm-charts
+- name: local-path-provisioner
+  version: "0.0.24"
+  condition: local-path-provisioner.enabled

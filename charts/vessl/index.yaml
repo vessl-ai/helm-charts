@@ -1,0 +1,298 @@
+apiVersion: v1
+entries:
+  dcgm-exporter:
+  - apiVersion: v2
+    appVersion: 3.1.5
+    created: "2023-08-03T11:14:37.008729+09:00"
+    description: A Helm chart for DCGM exporter
+    digest: ca4d5b6631053351ede86b64a141a8f1e5746b9c95eeb702576298476a308cbb
+    home: https://github.com/nvidia/dcgm-exporter/
+    icon: https://assets.nvidiagrid.net/ngc/logos/DCGM.png
+    keywords:
+    - gpu
+    - cuda
+    - compute
+    - monitoring
+    - telemetry
+    - tesla
+    kubeVersion: '>= 1.19.0-0'
+    name: dcgm-exporter
+    sources:
+    - https://github.com/nvidia/dcgm-exporter
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/charts/dcgm-exporter-3.1.5.tgz
+    version: 3.1.5
+  gpu-feature-discovery:
+  - apiVersion: v2
+    appVersion: 0.8.1
+    created: "2023-08-03T11:14:37.00955+09:00"
+    dependencies:
+    - alias: nfd
+      condition: nfd.deploy,nfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.13.2
+    description: A Helm chart for gpu-feature-discovery on Kubernetes
+    digest: 2cc75a82e00d97ac97a55eb47e8bfbd00411e4118128d134cd9dbea03386cc71
+    home: https://github.com/NVIDIA/gpu-feature-discovery
+    kubeVersion: '>= 1.10.0-0'
+    name: gpu-feature-discovery
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/charts/gpu-feature-discovery-0.8.1.tgz
+    version: 0.8.1
+  kube-state-metrics:
+  - annotations:
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/prometheus-community/helm-charts
+    apiVersion: v2
+    appVersion: 2.9.2
+    created: "2023-08-03T11:14:37.010171+09:00"
+    description: Install kube-state-metrics to generate and expose cluster-level metrics
+    digest: 6ac74744c5f478c976d3a95d9fa4027b8eb60767b8991785ca43b0ace75df7c7
+    home: https://github.com/kubernetes/kube-state-metrics/
+    keywords:
+    - metric
+    - monitoring
+    - prometheus
+    - kubernetes
+    maintainers:
+    - email: tariq.ibrahim@mulesoft.com
+      name: tariq1890
+    - email: manuel@rueg.eu
+      name: mrueg
+    - email: david@0xdc.me
+      name: dotdc
+    name: kube-state-metrics
+    sources:
+    - https://github.com/kubernetes/kube-state-metrics/
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/charts/kube-state-metrics-5.10.1.tgz
+    version: 5.10.1
+  node-feature-discovery:
+  - apiVersion: v2
+    appVersion: v0.13.3
+    created: "2023-08-03T11:14:37.010778+09:00"
+    description: 'Detects hardware features available on each node in a Kubernetes
+      cluster, and advertises those features using node labels. '
+    digest: 092b16ddd3c8079ab82c75c5746ed5e4b157c7fd88551441d290140d0a6ea3ac
+    home: https://github.com/kubernetes-sigs/node-feature-discovery
+    keywords:
+    - feature-discovery
+    - feature-detection
+    - node-labels
+    name: node-feature-discovery
+    sources:
+    - https://github.com/kubernetes-sigs/node-feature-discovery
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/charts/node-feature-discovery-chart-0.13.3.tgz
+    version: 0.13.3
+  nvidia-device-plugin:
+  - apiVersion: v2
+    appVersion: 0.14.1
+    created: "2023-08-03T11:14:37.011727+09:00"
+    dependencies:
+    - alias: nfd
+      condition: nfd.enabled,gfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.12.1
+    - alias: gfd
+      condition: gfd.enabled
+      name: gpu-feature-discovery
+      repository: ""
+      version: 0.8.1
+    description: A Helm chart for the nvidia-device-plugin on Kubernetes
+    digest: 4ce72465fa8b43ae5fa96f93daba4894fa2b4887d792220aa401db2168551ccc
+    home: https://github.com/NVIDIA/k8s-device-plugin
+    kubeVersion: '>= 1.10.0-0'
+    name: nvidia-device-plugin
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/charts/nvidia-device-plugin-0.14.1.tgz
+    version: 0.14.1
+  prometheus:
+  - annotations:
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/prometheus-community/helm-charts
+        - name: Upstream Project
+          url: https://github.com/prometheus/prometheus
+    apiVersion: v2
+    appVersion: v2.46.0
+    created: "2023-08-03T11:14:37.015947+09:00"
+    dependencies:
+    - condition: alertmanager.enabled
+      name: alertmanager
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 0.33.*
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.10.*
+    - condition: prometheus-node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.21.*
+    - condition: prometheus-pushgateway.enabled
+      name: prometheus-pushgateway
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 2.4.*
+    description: Prometheus is a monitoring system and time series database.
+    digest: e0ee86afde6560acd8ae529a1ab9aae2696b65ea3aaf599717dcfdb4c4d50f29
+    home: https://prometheus.io/
+    icon: https://raw.githubusercontent.com/prometheus/prometheus.github.io/master/assets/prometheus_logo-cb55bb5c346.png
+    keywords:
+    - monitoring
+    - prometheus
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - email: gianrubio@gmail.com
+      name: gianrubio
+    - email: zanhsieh@gmail.com
+      name: zanhsieh
+    - email: miroslav.hadzhiev@gmail.com
+      name: Xtigyro
+    - email: naseem@transit.app
+      name: naseemkullah
+    - email: rootsandtrees@posteo.de
+      name: zeritti
+    name: prometheus
+    sources:
+    - https://github.com/prometheus/alertmanager
+    - https://github.com/prometheus/prometheus
+    - https://github.com/prometheus/pushgateway
+    - https://github.com/prometheus/node_exporter
+    - https://github.com/kubernetes/kube-state-metrics
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/charts/prometheus-23.2.0.tgz
+    version: 23.2.0
+  prometheus-node-exporter:
+  - annotations:
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Chart Source
+          url: https://github.com/prometheus-community/helm-charts
+    apiVersion: v2
+    appVersion: 1.6.0
+    created: "2023-08-03T11:14:37.016599+09:00"
+    description: A Helm chart for prometheus node-exporter
+    digest: b7f918625fa22166759715060ed70e9ede1d5636957f643aea967cd94740e712
+    home: https://github.com/prometheus/node_exporter/
+    keywords:
+    - node-exporter
+    - prometheus
+    - exporter
+    maintainers:
+    - email: gianrubio@gmail.com
+      name: gianrubio
+    - email: zanhsieh@gmail.com
+      name: zanhsieh
+    - email: rootsandtrees@posteo.de
+      name: zeritti
+    name: prometheus-node-exporter
+    sources:
+    - https://github.com/prometheus/node_exporter/
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/charts/prometheus-node-exporter-4.21.0.tgz
+    version: 4.21.0
+  vessl:
+  - apiVersion: v2
+    appVersion: 0.6.15
+    created: "2023-08-03T11:14:37.008428+09:00"
+    dependencies:
+    - alias: nfd
+      condition: nfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.13.3
+    - alias: gfd
+      condition: gfd.enabled
+      name: gpu-feature-discovery
+      repository: https://nvidia.github.io/gpu-feature-discovery
+      version: 0.8.1
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.10.1
+    - alias: node-exporter
+      condition: node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.21.0
+    - condition: dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 3.1.5
+    - condition: nvidia-device-plugin.enabled
+      name: nvidia-device-plugin
+      repository: https://nvidia.github.io/k8s-device-plugin
+      version: 0.14.1
+    - alias: prometheus-remote-write
+      condition: prometheus-remote-write.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 23.2.0
+    - condition: local-path-provisioner.enabled
+      name: local-path-provisioner
+      repository: ""
+      version: 0.0.24
+    digest: 1b9979dc10bede236f071b141501d7c571c04d0d041a2383662bb21bf03243aa
+    name: vessl
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.1.tgz
+    version: 0.0.1
+  - apiVersion: v2
+    appVersion: 0.6.15
+    created: "2023-08-02T21:36:23.727933+09:00"
+    dependencies:
+    - alias: nfd
+      condition: nfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.13.3
+    - alias: gfd
+      condition: gfd.enabled
+      name: gpu-feature-discovery
+      repository: https://nvidia.github.io/gpu-feature-discovery
+      version: 0.8.1
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.10.1
+    - alias: node-exporter
+      condition: node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.21.0
+    - condition: dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 3.1.5
+    - condition: nvidia-device-plugin.enabled
+      name: nvidia-device-plugin
+      repository: https://nvidia.github.io/k8s-device-plugin
+      version: 0.14.1
+    - alias: prometheus-remote-write
+      condition: prometheus-remote-write.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 23.2.0
+    - name: local-path-provisioner
+      repository: ""
+      version: 0.0.24
+    digest: 46c3c56a33d7a51058fb199ab181889013857ce7b29b50569397d55aebcc1d84
+    name: vessl
+    type: application
+    urls:
+    - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.1-rc.1.tgz
+    version: 0.0.1-rc.1
+generated: "2023-08-03T11:14:36.998706+09:00"
