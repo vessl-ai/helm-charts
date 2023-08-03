@@ -1,13 +1,14 @@
 agent:
   accessToken: # required
   clusterName:
-  ingressEndpoint: # To be deprecated
+  providerType: on-premise # on-premise, aws, gcp, oci, azure
   imagePullPolicy:
   apiServer: https://api.vessl.ai
   logLevel: info
   env: prod
   image: "quay.io/vessl-ai/cluster-agent:0.6.16"
   sentryDsn: https://0481c31171114c109ac911ac947f0518@o386227.ingest.sentry.io/5585090
+  ingressEndpoint: # To be deprecated
   nodeSelector: {}
   tolerations:
     - key: "node-role.kubernetes.io/master"

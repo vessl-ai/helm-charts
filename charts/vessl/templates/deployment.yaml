@@ -56,6 +56,8 @@ spec:
             - name: VESSL_KUBERNETES_INGRESS_ENDPOINT
               value: "{{ .Values.agent.ingressEndpoint }}"
             {{- end }}
+            - name: VESSL_PROVIDER_TYPE
+              value: "{{ .Values.agent.providerType }}"
           volumeMounts:
             - name: access-token
               readOnly: true
