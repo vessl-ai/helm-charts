@@ -9,5 +9,5 @@ This repository contains Helm charts to integrate a Kubernetes cluster with VESS
 ```
 helm repo add vessl https://vessl-ai.github.io/helm-charts
 helm repo update
-helm install vessl/vessl
+helm install vessl vessl/vessl --namespace vessl --create-namespace
 ```
