@@ -1,3 +1,4 @@
+{{- if eq .Values.agent.scope "cluster" }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -18,3 +19,4 @@ subjects:
   - kind: ServiceAccount
     name: vessl
     namespace: {{ .Release.Namespace }}
+{{- end }}
