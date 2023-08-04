@@ -3,6 +3,7 @@ agent:
   clusterName:
   providerType: on-premise # on-premise, aws, gcp, oci, azure
   imagePullPolicy:
+  localStorageClassName:
   apiServer: https://api.vessl.ai
   logLevel: info
   env: prod
