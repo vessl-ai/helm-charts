@@ -1,4 +1,5 @@
 release:
+	# Update the version in charts/vessl/Chart.yaml first.
 	helm dependency update charts/vessl
 	helm package charts/vessl
 	aws s3 cp --acl public-read vessl-*.tgz s3://vessl-helm-packages/vessl/
