@@ -133,9 +133,9 @@ kube-state-metrics:
   service:
     annotations:
       v1.k8s.savvihub.com/managed: "true"
-│     v1.k8s.savvihub.com/type: kube-state-metrics
-│     v1.k8s.vessl.ai/managed: "true"
-│     v1.k8s.vessl.ai/type: kube-state-metrics
+      v1.k8s.savvihub.com/type: kube-state-metrics
+      v1.k8s.vessl.ai/managed: "true"
+      v1.k8s.vessl.ai/type: kube-state-metrics
   tolerations:
     - key: "node-role.kubernetes.io/master"
       operator: "Equal"
@@ -181,9 +181,9 @@ dcgm-exporter:
     annotations:
       prometheus.io/scrape: "true"
       v1.k8s.savvihub.com/managed: "true"
-│     v1.k8s.savvihub.com/type: dcgm-exporter
-│     v1.k8s.vessl.ai/managed: "true"
-│     v1.k8s.vessl.ai/type: dcgm-exporter
+      v1.k8s.savvihub.com/type: dcgm-exporter
+      v1.k8s.vessl.ai/managed: "true"
+      v1.k8s.vessl.ai/type: dcgm-exporter
   serviceMonitor:
     enabled: false
   kubeletPath: "/var/lib/k0s/kubelet/pod-resources"
