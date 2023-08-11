@@ -18,14 +18,14 @@ helm install vessl vessl/vessl --namespace vessl --create-namespace
 
 a. Add repos
 
-    ```bash
-    helm repo add node-feature-discovery https://kubernetes-sigs.github.io/node-feature-discovery/charts &&
-    helm repo add gpu-feature-discovery https://nvidia.github.io/gpu-feature-discovery &&
-    helm repo add prometheus https://prometheus-community.github.io/helm-charts &&
-    helm repo add dcgm-exporter https://nvidia.github.io/dcgm-exporter/helm-charts &&
-    helm repo add nvidia-k8s-device-plugin https://nvidia.github.io/k8s-device-plugin &&
-    helm repo update
-    ```
+```bash
+helm repo add node-feature-discovery https://kubernetes-sigs.github.io/node-feature-discovery/charts
+helm repo add gpu-feature-discovery https://nvidia.github.io/gpu-feature-discovery
+helm repo add prometheus https://prometheus-community.github.io/helm-charts
+helm repo add dcgm-exporter https://nvidia.github.io/dcgm-exporter/helm-charts
+helm repo add nvidia-k8s-device-plugin https://nvidia.github.io/k8s-device-plugin
+helm repo update
+```
 
 b. Build dependencies
 
