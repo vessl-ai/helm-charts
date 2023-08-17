@@ -131,9 +131,17 @@ gfd:
 kube-state-metrics:
   enabled: true
   metricLabelsAllowlist:
+  # This option makes `kube_pod_labels`, `kube_deployment_labels`, etc. contain all labels
+  # (including those like `label_v1_k8s_vessl_ai_partition="xxxx"`) of the Kubernetes object.
+  # This is used when aggregating values by Kubernetes resources' `*_vessl_ai_*` labels
+  # to provide metrics and graphs.
+  # The list should be extended when a new kind of resource requires label-joining.
     - deployments=[*]
+    - jobs=[*]
     - nodes=[*]
     - pods=[*]
+    - replicasets=[*]
+    - statefulsets=[*]
   tolerations:
     - key: "node-role.kubernetes.io/master"
       operator: "Equal"
