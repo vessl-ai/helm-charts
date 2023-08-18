@@ -183,6 +183,11 @@ kube-state-metrics:
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-node-exporter
 node-exporter:
   enabled: true
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      v1.k8s.vessl.ai/managed: "true"
+      v1.k8s.vessl.ai/type: node-exporter
 
 # https://github.com/NVIDIA/dcgm-exporter/tree/main/deployment
 dcgm-exporter:
@@ -190,8 +195,6 @@ dcgm-exporter:
   service:
     annotations:
       prometheus.io/scrape: "true"
-      v1.k8s.savvihub.com/managed: "true"
-      v1.k8s.savvihub.com/type: dcgm-exporter
       v1.k8s.vessl.ai/managed: "true"
       v1.k8s.vessl.ai/type: dcgm-exporter
   serviceMonitor:
