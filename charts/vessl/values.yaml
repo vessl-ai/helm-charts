@@ -217,6 +217,7 @@ dcgm-exporter:
 prometheus-remote-write:
   enabled: true
   server:
+    configMapOverrideName: vessl-prometheus-scrape-config 
     persistentVolume:
       enabled: false
     # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
