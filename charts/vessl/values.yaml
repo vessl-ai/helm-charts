@@ -132,8 +132,6 @@ kube-state-metrics:
   enabled: true
   service:
     annotations:
-      v1.k8s.savvihub.com/managed: "true"
-      v1.k8s.savvihub.com/type: kube-state-metrics
       v1.k8s.vessl.ai/managed: "true"
       v1.k8s.vessl.ai/type: kube-state-metrics
   tolerations:
