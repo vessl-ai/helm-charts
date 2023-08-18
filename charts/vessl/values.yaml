@@ -122,8 +122,8 @@ nfd:
 gfd:
   enabled: true
   tolerations:
-     - operator: "Exists"
-       effect: "NoSchedule"
+    - operator: "Exists"
+      effect: "NoSchedule"
   nfd:
     enabled: false
 
@@ -134,6 +134,18 @@ kube-state-metrics:
     annotations:
       v1.k8s.vessl.ai/managed: "true"
       v1.k8s.vessl.ai/type: kube-state-metrics
+  metricLabelsAllowlist:
+  # This option makes `kube_pod_labels`, `kube_deployment_labels`, etc. contain all labels
+  # (including those like `label_v1_k8s_vessl_ai_partition="xxxx"`) of the Kubernetes object.
+  # This is used when aggregating values by Kubernetes resources' `*_vessl_ai_*` labels
+  # to provide metrics and graphs.
+  # The list should be extended when a new kind of resource requires label-joining.
+    - deployments=[*]
+    - jobs=[*]
+    - nodes=[*]
+    - pods=[*]
+    - replicasets=[*]
+    - statefulsets=[*]
   tolerations:
     - key: "node-role.kubernetes.io/master"
       operator: "Equal"
@@ -184,7 +196,7 @@ dcgm-exporter:
       v1.k8s.vessl.ai/type: dcgm-exporter
   serviceMonitor:
     enabled: false
-  kubeletPath: "/var/lib/k0s/kubelet/pod-resources"
+  kubeletPath: "/var/lib/kubelet/pod-resources"
   tolerations:
     - operator: "Exists"
       effect: "NoSchedule"
@@ -233,10 +245,10 @@ prometheus-remote-write:
           - action: "labeldrop"
             regex: "minikube_(.+)"
     extraSecretMounts:
-     - name: "access-token"
-       secretName: "vessl-agent"
-       mountPath: "/etc/secrets"
-       readOnly: true
+      - name: "access-token"
+        secretName: "vessl-agent"
+        mountPath: "/etc/secrets"
+        readOnly: true
     tolerations:
       - key: "node-role.kubernetes.io/master"
         operator: "Equal"
@@ -289,17 +301,17 @@ local-path-provisioner:
     repository: "quay.io/vessl-ai/busybox"
     tag: "21.10"
   tolerations:
-      - key: "node-role.kubernetes.io/master"
-        operator: "Equal"
-        value: ""
-        effect: "NoSchedule"
-      - key: "node-role.kubernetes.io/control-plane"
-        operator: "Equal"
-        value: ""
-        effect: "NoSchedule"
-      - key: "v1.k8s.vessl.ai/dedicated"
-        operator: "Exists"
-        effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Equal"
+      value: ""
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Equal"
+      value: ""
+      effect: "NoSchedule"
+    - key: "v1.k8s.vessl.ai/dedicated"
+      operator: "Exists"
+      effect: "NoSchedule"
   affinity:
     nodeAffinity:
       preferredDuringSchedulingIgnoredDuringExecution:
@@ -321,5 +333,4 @@ local-path-provisioner:
               - key: "v1.k8s.vessl.ai/dedicated"
                 operator: "In"
                 values: ["manager"]
-
 # harbor
