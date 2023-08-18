@@ -290,6 +290,54 @@ prometheus-remote-write:
     enabled: false
   prometheus-pushgateway:
     enabled: false
+  relabelConfigs:
+  - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
+    separator: ;
+    regex: Node;(.*)
+    target_label: node
+    replacement: ${1}
+    action: replace
+  - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
+    separator: ;
+    regex: Pod;(.*)
+    target_label: pod
+    replacement: ${1}
+    action: replace
+  - source_labels: [__meta_kubernetes_namespace]
+    separator: ;
+    regex: (.*)
+    target_label: namespace
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_service_name]
+    separator: ;
+    regex: (.*)
+    target_label: service
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_pod_name]
+    separator: ;
+    regex: (.*)
+    target_label: pod
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_pod_container_name]
+    separator: ;
+    regex: (.*)
+    target_label: container
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_service_name]
+    separator: ;
+    regex: (.*)
+    target_label: job
+    replacement: ${1}
+    action: replace
+  - separator: ;
+    regex: (.*)
+    target_label: endpoint
+    replacement: metrics
+    action: replace
 
 # https://github.com/rancher/local-path-provisioner/tree/master/deploy/chart/local-path-provisioner
 local-path-provisioner:

@@ -39,53 +39,7 @@ data:
         regex: metrics
         replacement: $1
         action: keep
-      - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
-        separator: ;
-        regex: Node;(.*)
-        target_label: node
-        replacement: ${1}
-        action: replace
-      - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
-        separator: ;
-        regex: Pod;(.*)
-        target_label: pod
-        replacement: ${1}
-        action: replace
-      - source_labels: [__meta_kubernetes_namespace]
-        separator: ;
-        regex: (.*)
-        target_label: namespace
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_service_name]
-        separator: ;
-        regex: (.*)
-        target_label: service
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_pod_name]
-        separator: ;
-        regex: (.*)
-        target_label: pod
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_pod_container_name]
-        separator: ;
-        regex: (.*)
-        target_label: container
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_service_name]
-        separator: ;
-        regex: (.*)
-        target_label: job
-        replacement: ${1}
-        action: replace
-      - separator: ;
-        regex: (.*)
-        target_label: endpoint
-        replacement: metrics
-        action: replace
+{{ toYaml (index .Values "prometheus-remote-write" "relabelConfigs") | nindent 6 }}
       - source_labels: [__meta_kubernetes_pod_node_name]
         separator: ;
         regex: ^(.*)$
@@ -146,53 +100,7 @@ data:
         source_labels:
         - __meta_kubernetes_endpoint_port_name
         regex: http
-      - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
-        separator: ;
-        regex: Node;(.*)
-        target_label: node
-        replacement: ${1}
-        action: replace
-      - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
-        separator: ;
-        regex: Pod;(.*)
-        target_label: pod
-        replacement: ${1}
-        action: replace
-      - source_labels: [__meta_kubernetes_namespace]
-        separator: ;
-        regex: (.*)
-        target_label: namespace
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_service_name]
-        separator: ;
-        regex: (.*)
-        target_label: service
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_pod_name]
-        separator: ;
-        regex: (.*)
-        target_label: pod
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_pod_container_name]
-        separator: ;
-        regex: (.*)
-        target_label: container
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_service_name]
-        separator: ;
-        regex: (.*)
-        target_label: job
-        replacement: ${1}
-        action: replace
-      - separator: ;
-        regex: (.*)
-        target_label: endpoint
-        replacement: metrics
-        action: replace
+{{ toYaml (index .Values "prometheus-remote-write" "relabelConfigs") | nindent 6 }}
       - separator: ;
         regex: feature_node_kubernetes_io_(.+)
         replacement: $1
@@ -251,38 +159,7 @@ data:
         source_labels:
         - __meta_kubernetes_endpoint_port_name
         regex: metrics
-      - source_labels:
-        - __meta_kubernetes_endpoint_address_target_kind
-        - __meta_kubernetes_endpoint_address_target_name
-        separator: ;
-        regex: Node;(.*)
-        replacement: ${1}
-        target_label: node
-      - source_labels:
-        - __meta_kubernetes_endpoint_address_target_kind
-        - __meta_kubernetes_endpoint_address_target_name
-        separator: ;
-        regex: Pod;(.*)
-        replacement: ${1}
-        target_label: pod
-      - source_labels:
-        - __meta_kubernetes_namespace
-        target_label: namespace
-      - source_labels:
-        - __meta_kubernetes_service_name
-        target_label: service
-      - source_labels:
-        - __meta_kubernetes_pod_name
-        target_label: pod
-      - source_labels:
-        - __meta_kubernetes_pod_container_name
-        target_label: container
-      - source_labels:
-        - __meta_kubernetes_service_name
-        target_label: job
-        replacement: ${1}
-      - target_label: endpoint
-        replacement: metrics
+{{ toYaml (index .Values "prometheus-remote-write" "relabelConfigs") | nindent 6 }}
       - source_labels:
         - __address__
         target_label: __tmp_hash
@@ -318,53 +195,7 @@ data:
         - __meta_kubernetes_service_label_v1_k8s_vessl_ai_type
         - __meta_kubernetes_service_labelpresent_v1_k8s_vessl_ai_type
         regex: (node-exporter);true
-      - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
-        separator: ;
-        regex: Node;(.*)
-        target_label: node
-        replacement: ${1}
-        action: replace
-      - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
-        separator: ;
-        regex: Pod;(.*)
-        target_label: pod
-        replacement: ${1}
-        action: replace
-      - source_labels: [__meta_kubernetes_namespace]
-        separator: ;
-        regex: (.*)
-        target_label: namespace
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_service_name]
-        separator: ;
-        regex: (.*)
-        target_label: service
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_pod_name]
-        separator: ;
-        regex: (.*)
-        target_label: pod
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_pod_container_name]
-        separator: ;
-        regex: (.*)
-        target_label: container
-        replacement: $1
-        action: replace
-      - source_labels: [__meta_kubernetes_service_name]
-        separator: ;
-        regex: (.*)
-        target_label: job
-        replacement: ${1}
-        action: replace
-      - separator: ;
-        regex: (.*)
-        target_label: endpoint
-        replacement: metrics
-        action: replace
+{{ toYaml (index .Values "prometheus-remote-write" "relabelConfigs") | nindent 6 }}
       - source_labels: [__meta_kubernetes_pod_node_name]
         separator: ;
         regex: ^(.*)$
