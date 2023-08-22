@@ -50,6 +50,14 @@ data:
         regex: feature_node_kubernetes_io_(.+)
         replacement: $1
         action: labeldrop
+      - separator: ;
+        regex: label_feature_node_kubernetes_io_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
+        regex: minikube_(.+)
+        replacement: $1
+        action: labeldrop
       - source_labels: [__address__]
         separator: ;
         regex: (.*)
@@ -103,6 +111,14 @@ data:
 {{ toYaml (index .Values "prometheus-remote-write" "relabelConfigs") | nindent 6 }}
       - separator: ;
         regex: feature_node_kubernetes_io_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
+        regex: label_feature_node_kubernetes_io_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
+        regex: minikube_(.+)
         replacement: $1
         action: labeldrop
       - source_labels: [__address__]
@@ -207,6 +223,14 @@ data:
         replacement: $1
         action: labeldrop
       - separator: ;
+        regex: label_feature_node_kubernetes_io_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
+        regex: minikube_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
         regex: ^pod$
         replacement: $1
         action: labeldrop
@@ -279,6 +303,14 @@ data:
         replacement: $1
         action: labeldrop
       - separator: ;
+        regex: label_feature_node_kubernetes_io_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
+        regex: minikube_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
         regex: nvidia_com_(.+)
         replacement: $1
         action: labeldrop
@@ -335,6 +367,14 @@ data:
         action: labeldrop
       - separator: ;
         regex: feature_node_kubernetes_io_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
+        regex: label_feature_node_kubernetes_io_(.+)
+        replacement: $1
+        action: labeldrop
+      - separator: ;
+        regex: minikube_(.+)
         replacement: $1
         action: labeldrop
       - separator: ;

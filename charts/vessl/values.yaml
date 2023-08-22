@@ -240,13 +240,6 @@ prometheus-remote-write:
         authorization:
           type: "Token"
           credentials_file: "/etc/secrets/token"
-        write_relabel_configs:
-          - action: "labeldrop"
-            regex: "feature_node_kubernetes_io_(.+)"
-          - action: "labeldrop"
-            regex: "label_feature_node_kubernetes_io_(.+)"
-          - action: "labeldrop"
-            regex: "minikube_(.+)"
     extraSecretMounts:
       - name: "access-token"
         secretName: "vessl-agent"
