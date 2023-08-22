@@ -130,6 +130,10 @@ gfd:
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
 kube-state-metrics:
   enabled: true
+  service:
+    annotations:
+      v1.k8s.vessl.ai/managed: "true"
+      v1.k8s.vessl.ai/type: kube-state-metrics
   metricLabelsAllowlist:
   # This option makes `kube_pod_labels`, `kube_deployment_labels`, etc. contain all labels
   # (including those like `label_v1_k8s_vessl_ai_partition="xxxx"`) of the Kubernetes object.
@@ -179,6 +183,11 @@ kube-state-metrics:
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-node-exporter
 node-exporter:
   enabled: true
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      v1.k8s.vessl.ai/managed: "true"
+      v1.k8s.vessl.ai/type: node-exporter
 
 # https://github.com/NVIDIA/dcgm-exporter/tree/main/deployment
 dcgm-exporter:
@@ -186,6 +195,8 @@ dcgm-exporter:
   service:
     annotations:
       prometheus.io/scrape: "true"
+      v1.k8s.vessl.ai/managed: "true"
+      v1.k8s.vessl.ai/type: dcgm-exporter
   serviceMonitor:
     enabled: false
   kubeletPath: "/var/lib/kubelet/pod-resources"
@@ -219,6 +230,7 @@ dcgm-exporter:
 prometheus-remote-write:
   enabled: true
   server:
+    configMapOverrideName: vessl-prometheus-scrape-config 
     persistentVolume:
       enabled: false
     # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
@@ -228,13 +240,6 @@ prometheus-remote-write:
         authorization:
           type: "Token"
           credentials_file: "/etc/secrets/token"
-        write_relabel_configs:
-          - action: "labeldrop"
-            regex: "feature_node_kubernetes_io_(.+)"
-          - action: "labeldrop"
-            regex: "label_feature_node_kubernetes_io_(.+)"
-          - action: "labeldrop"
-            regex: "minikube_(.+)"
     extraSecretMounts:
       - name: "access-token"
         secretName: "vessl-agent"
@@ -281,6 +286,54 @@ prometheus-remote-write:
     enabled: false
   prometheus-pushgateway:
     enabled: false
+  relabelConfigs:
+  - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
+    separator: ;
+    regex: Node;(.*)
+    target_label: node
+    replacement: ${1}
+    action: replace
+  - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
+    separator: ;
+    regex: Pod;(.*)
+    target_label: pod
+    replacement: ${1}
+    action: replace
+  - source_labels: [__meta_kubernetes_namespace]
+    separator: ;
+    regex: (.*)
+    target_label: namespace
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_service_name]
+    separator: ;
+    regex: (.*)
+    target_label: service
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_pod_name]
+    separator: ;
+    regex: (.*)
+    target_label: pod
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_pod_container_name]
+    separator: ;
+    regex: (.*)
+    target_label: container
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_service_name]
+    separator: ;
+    regex: (.*)
+    target_label: job
+    replacement: ${1}
+    action: replace
+  - separator: ;
+    regex: (.*)
+    target_label: endpoint
+    replacement: metrics
+    action: replace
 
 # https://github.com/rancher/local-path-provisioner/tree/master/deploy/chart/local-path-provisioner
 local-path-provisioner:
