@@ -6,7 +6,7 @@ agent:
   apiServer: https://api.vessl.ai
   logLevel: info
   env: prod
-  image: "quay.io/vessl-ai/cluster-agent:0.6.18"
+  image: "quay.io/vessl-ai/cluster-agent:0.6.19"
   sentryDsn: https://0481c31171114c109ac911ac947f0518@o386227.ingest.sentry.io/5585090
   scope: cluster # cluster, namespace
   containerRuntime: containerd # containerd, docker
