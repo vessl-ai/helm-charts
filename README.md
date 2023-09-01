@@ -40,6 +40,13 @@ helm dependency build
 
 `helm install vessl ./charts/vessl --dry-run -n vessl --set agent.accessToken='dummy'`
 
+## How to Release a Chart
+
+1. Update the chart version in Chart.yaml and push the changes.
+2. Create a pull request (PR) with the `release` label.
+3. Once the PR is reviewed and approved, you can proceed to merge it.
+
+
 ### Tips
 
 1. Make dry run before your change, and check diff with the one after you change
