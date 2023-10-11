@@ -23,5 +23,8 @@ dependencies:
 - name: local-path-provisioner
   repository: ""
   version: 0.0.24
-digest: sha256:e930f365df54406241e6ad87484f2ee5dee831999e4ee8e54eb8502a998bf926
-generated: "2023-08-03T11:13:58.57249+09:00"
+- name: longhorn
+  repository: https://charts.longhorn.io
+  version: 1.5.1
+digest: sha256:2c09b79079357b0e20e351c83e6068cdc4cd352da5882e0669f5e74277dc4713
+generated: "2023-10-11T10:33:58.157178+09:00"

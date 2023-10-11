@@ -1,7 +1,7 @@
 apiVersion: v2
 name: vessl
 type: application
-version: 0.0.10-rc
+version: 0.0.11-rc
 appVersion: "0.6.19"
 dependencies:
 - name: node-feature-discovery
@@ -39,3 +39,7 @@ dependencies:
 - name: local-path-provisioner
   version: "0.0.24"
   condition: local-path-provisioner.enabled
+- name: longhorn
+  version: "1.5.1"
+  condition: longhorn.enabled
+  repository: https://charts.longhorn.io
