@@ -1,7 +1,7 @@
 apiVersion: v2
 name: vessl
 type: application
-version: 0.0.11-rc
+version: 0.0.11-rc2
 appVersion: "0.6.19"
 dependencies:
 - name: node-feature-discovery
