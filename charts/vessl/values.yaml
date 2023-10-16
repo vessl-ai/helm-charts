@@ -49,6 +49,7 @@ agent:
 # https://github.com/NVIDIA/k8s-device-plugin/tree/main/deployments/helm/nvidia-device-plugin
 nvidia-device-plugin:
   enabled: true
+  deviceListStrategy: volume-mounts
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -379,7 +380,7 @@ local-path-provisioner:
                 values: ["manager"]
 
 longhorn:
-  enabled: true
+  enabled: false
   # https://longhorn.io/docs/1.5.1/advanced-resources/deploy/customizing-default-settings/#using-helm
   defaultSettings:
     defaultReplicaCount: 1
