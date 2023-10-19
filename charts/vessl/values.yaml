@@ -380,7 +380,7 @@ local-path-provisioner:
                 values: ["manager"]
 
 longhorn:
-  enabled: false
+  enabled: true
   # https://longhorn.io/docs/1.5.1/advanced-resources/deploy/customizing-default-settings/#using-helm
   defaultSettings:
     defaultReplicaCount: 1
