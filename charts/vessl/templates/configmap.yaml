@@ -83,6 +83,7 @@ data:
         namespaces:
           names: 
           - {{ .Release.Namespace }}
+
     - job_name: vessl-kube-state-metrics
       honor_labels: true
       honor_timestamps: true
@@ -149,6 +150,9 @@ data:
         regex: ^instance$
         replacement: $1
         action: labeldrop
+      - action: labelmap
+        regex: label_(.+)_k8s_vessl_ai_(.+)
+        replacement: '${1}_k8s_vessl_ai_${2}'
       kubernetes_sd_configs:
       - role: endpoints
         kubeconfig_file: ""
@@ -157,6 +161,7 @@ data:
         namespaces:
           names: 
           - {{ .Release.Namespace }}
+
     - job_name: vessl-model-service-servicemonitor
       honor_labels: true
       kubernetes_sd_configs:
@@ -190,6 +195,7 @@ data:
         - __name__
         regex: (bentoml_(.+)|BENTOML_(.+)|nv_(.+)|)
         action: keep
+
     - job_name: vessl-node-exporter-servicemonitor
       honor_labels: true
       honor_timestamps: true
@@ -264,6 +270,7 @@ data:
         namespaces:
           names: 
           - {{ .Release.Namespace }}
+
     - job_name: kubernetes-nodes-kubelet
       honor_timestamps: true
       scrape_interval: 30s
@@ -331,6 +338,7 @@ data:
         kubeconfig_file: ""
         follow_redirects: true
         enable_http2: true
+
     - job_name: kubernetes-nodes-cadvisor
       honor_timestamps: true
       scrape_interval: 30s
