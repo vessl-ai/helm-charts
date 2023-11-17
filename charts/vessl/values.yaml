@@ -386,5 +386,3 @@ longhorn:
     defaultReplicaCount: 1
     defaultDataLocality: strict-local
     taintToleration: node-role.kubernetes.io/master=:NoSchedule; node-role.kubernetes.io/control-plane=:NoSchedule; v1.k8s.vessl.ai/dedicated:NoSchedule
-
-# harbor
