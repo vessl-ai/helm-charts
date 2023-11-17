@@ -3,6 +3,56 @@ entries:
   vessl:
   - apiVersion: v2
     appVersion: 0.6.20
+    created: "2023-11-17T06:17:49.076610148Z"
+    dependencies:
+    - alias: nfd
+      condition: nfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.13.3
+    - alias: gfd
+      condition: gfd.enabled
+      name: gpu-feature-discovery
+      repository: https://nvidia.github.io/gpu-feature-discovery
+      version: 0.8.1
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.10.1
+    - alias: node-exporter
+      condition: node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.21.0
+    - condition: dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 3.1.5
+    - condition: nvidia-device-plugin.enabled
+      name: nvidia-device-plugin
+      repository: https://nvidia.github.io/k8s-device-plugin
+      version: 0.14.1
+    - alias: prometheus-remote-write
+      condition: prometheus-remote-write.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 23.2.0
+    - condition: local-path-provisioner.enabled
+      name: local-path-provisioner
+      repository: ""
+      version: 0.0.24
+    - condition: longhorn.enabled
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: 1.5.1
+    digest: 9d22af3e10c8f896e3e41db9cb74eca22168d8457b6953495ab55770327a0c1b
+    name: vessl
+    type: application
+    urls:
+    - https://github.com/vessl-ai/helm-charts/releases/download/vessl-0.0.15/vessl-0.0.15.tgz
+    version: 0.0.15
+  - apiVersion: v2
+    appVersion: 0.6.20
     created: "2023-11-16T06:03:52.48375282Z"
     dependencies:
     - alias: nfd
@@ -619,4 +669,4 @@ entries:
     urls:
     - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.3.tgz
     version: 0.0.3
-generated: "2023-11-16T06:03:52.483842668Z"
+generated: "2023-11-17T06:17:49.076722048Z"
