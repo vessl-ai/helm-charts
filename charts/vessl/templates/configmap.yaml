@@ -193,7 +193,7 @@ data:
       metric_relabel_configs:
       - source_labels:
         - __name__
-        regex: (bentoml_(.+)|BENTOML_(.+)|nv_(.+)|)
+        regex: (bentoml_(.+)|BENTOML_(.+)|nv_(.+)|Requests[245]XX|ts_inference_(.+))
         action: keep
 
     - job_name: vessl-node-exporter-servicemonitor
