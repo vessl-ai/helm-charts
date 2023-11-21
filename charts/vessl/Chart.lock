@@ -20,11 +20,14 @@ dependencies:
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 23.2.0
-- name: local-path-provisioner
-  repository: ""
-  version: 0.0.24
 - name: longhorn
   repository: https://charts.longhorn.io
   version: 1.5.1
-digest: sha256:2c09b79079357b0e20e351c83e6068cdc4cd352da5882e0669f5e74277dc4713
-generated: "2023-10-11T10:33:58.157178+09:00"
+- name: local-path-provisioner
+  repository: ""
+  version: 0.0.24
+- name: harbor
+  repository: ""
+  version: 1.0.0
+digest: sha256:82824c2812880e9897e18c419ccecb61e88e9606d5959ec8ad89f6c78555016a
+generated: "2023-11-21T17:19:27.403354+09:00"
