@@ -1,4 +1,4 @@
-{{- if eq .Values.harbor.enabled true -}}
+{{- if eq .Values.enabled true -}}
 # Source: cluster-resources/charts/harbor/templates/core/core-cm.yaml
 apiVersion: v1
 kind: ConfigMap
@@ -23,7 +23,7 @@ data:
   POSTGRESQL_SSLMODE: "disable"
   POSTGRESQL_MAX_IDLE_CONNS: "100"
   POSTGRESQL_MAX_OPEN_CONNS: "900"
-  EXT_ENDPOINT: "http://{{- .Values.harbor.clusterIP -}}:80"
+  EXT_ENDPOINT: "http://{{- .Values.clusterIP -}}:80"
   CORE_URL: "http://vessl-harbor-core:80"
   JOBSERVICE_URL: "http://vessl-harbor-jobservice"
   REGISTRY_URL: "http://vessl-harbor-registry:5000"

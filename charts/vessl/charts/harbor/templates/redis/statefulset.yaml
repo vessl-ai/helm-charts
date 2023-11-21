@@ -1,4 +1,4 @@
-{{- if eq .Values.harbor.enabled true -}}
+{{- if eq .Values.enabled true -}}
 # Source: cluster-resources/charts/harbor/templates/redis/statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
@@ -45,11 +45,11 @@ spec:
         - name: data
           mountPath: /var/lib/redis
           subPath:
-      {{- with .Values.harbor.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.harbor.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}

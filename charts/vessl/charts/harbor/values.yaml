@@ -1,3 +1,4 @@
+enabled: false
 clusterIP:
 databasePassword:
 harborAdminPassword:

@@ -1,4 +1,4 @@
-{{- if eq .Values.harbor.enabled true -}}
+{{- if eq .Values.enabled true -}}
 # Source: cluster-resources/charts/harbor/templates/registry/registryctl-cm.yaml
 apiVersion: v1
 kind: ConfigMap
