@@ -28,6 +28,6 @@ dependencies:
   version: 0.0.24
 - name: harbor
   repository: ""
-  version: 1.0.0
-digest: sha256:82824c2812880e9897e18c419ccecb61e88e9606d5959ec8ad89f6c78555016a
-generated: "2023-11-21T17:19:27.403354+09:00"
+  version: 1.0.1
+digest: sha256:101f07222ecd1b841f3c7a1b123a4aa6b3e9d06d1a08cf2bc087558f36cfe247
+generated: "2023-11-21T17:30:52.04519+09:00"

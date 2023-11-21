@@ -44,5 +44,5 @@ dependencies:
   version: "0.0.24"
   condition: local-path-provisioner.enabled
 - name: harbor
-  version: "1.0.0"
+  version: "1.0.1"
   condition: harbor.enabled
