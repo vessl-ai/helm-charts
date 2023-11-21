@@ -11,11 +11,11 @@ app: "harbor"
 {{- end -}}
 
 {{- define "harbor.admin.password" -}}
-  {{- .Values.harbor.harborAdminPassword | nospace | b64enc | quote -}}
+  {{- .Values.harborAdminPassword | nospace | b64enc | quote -}}
 {{- end -}}
 
 {{- define "harbor.registry.rawPassword" -}}
-  {{- .Values.harbor.registryPassword | nospace -}}
+  {{- .Values.registryPassword | nospace -}}
 {{- end -}}
 
 {{- define "harbor.registry.password" -}}
@@ -23,7 +23,7 @@ app: "harbor"
 {{- end -}}
 
 {{- define "harbor.database.rawPassword" -}}
-  {{- .Values.harbor.databasePassword | nospace -}}
+  {{- .Values.databasePassword | nospace -}}
 {{- end -}}
 
 {{- define "harbor.database.escapedRawPassword" -}}
@@ -35,13 +35,13 @@ app: "harbor"
 {{- end -}}
 
 {{- define "vessl.image.sourceType" -}}
-  {{- .Values.harbor.mirrorSourceType | default "quay" -}}
+  {{- .Values.mirrorSourceType | default "quay" -}}
 {{- end -}}
 
 {{- define "vessl.image.source" -}}
   {{- if eq (include "vessl.image.sourceType" .) "quay" -}}
-    {{- if .Values.harbor.enabled -}}
-      {{- .Values.harbor.clusterIP -}}/quay/vessl-ai
+    {{- if .Values.enabled -}}
+      {{- .Values.clusterIP -}}/quay/vessl-ai
     {{- else -}}
       quay.io/vessl-ai
     {{- end -}}
