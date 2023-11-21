@@ -20,7 +20,7 @@ spec:
 {{ include "harbor.labels" . | indent 8 }}
         component: nginx
       annotations:
-        checksum/configmap: {{ include (print $.Template.BasePath "/harbor/nginx/configmap-http.yaml") . | sha256sum }}
+        checksum/configmap: {{ include (print $.Template.BasePath "/nginx/configmap-http.yaml") . | sha256sum }}
     spec:
       securityContext:
         runAsUser: 10000
