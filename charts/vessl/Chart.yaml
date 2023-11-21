@@ -36,10 +36,13 @@ dependencies:
   version: "23.2.0"
   condition: prometheus-remote-write.enabled
   repository: https://prometheus-community.github.io/helm-charts
-- name: local-path-provisioner
-  version: "0.0.24"
-  condition: local-path-provisioner.enabled
 - name: longhorn
   version: "1.5.1"
   condition: longhorn.enabled
   repository: https://charts.longhorn.io
+- name: local-path-provisioner
+  version: "0.0.24"
+  condition: local-path-provisioner.enabled
+- name: harbor
+  version: "1.0.0"
+  condition: harbor.enabled
