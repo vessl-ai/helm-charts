@@ -379,6 +379,7 @@ local-path-provisioner:
                 operator: "In"
                 values: ["manager"]
 
+# https://github.com/longhorn/longhorn/tree/master/chart
 longhorn:
   enabled: true
   # https://longhorn.io/docs/1.5.1/advanced-resources/deploy/customizing-default-settings/#using-helm
@@ -386,3 +387,6 @@ longhorn:
     defaultReplicaCount: 1
     defaultDataLocality: strict-local
     taintToleration: node-role.kubernetes.io/master=:NoSchedule; node-role.kubernetes.io/control-plane=:NoSchedule; v1.k8s.vessl.ai/dedicated:NoSchedule
+
+harbor:
+  enabled: false

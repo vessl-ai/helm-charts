@@ -1,19 +1,17 @@
 {{- if eq .Values.harbor.enabled true -}}
-# Source: cluster-resources/charts/harbor/templates/nginx/service.yaml
+# Source: cluster-resources/charts/harbor/templates/jobservice/jobservice-svc.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: harbor
+  name: "vessl-harbor-jobservice"
   labels:
 {{ include "harbor.labels" . | indent 4 }}
 spec:
-  type: ClusterIP
-  clusterIP: {{ required "A valid clusterIP is required!" .Values.harbor.clusterIP }}
   ports:
-    - name: http
+    - name: http-jobservice
       port: 80
       targetPort: 8080
   selector:
 {{ include "harbor.matchLabels" . | indent 4 }}
-    component: nginx
+    component: jobservice
 {{- end -}}
