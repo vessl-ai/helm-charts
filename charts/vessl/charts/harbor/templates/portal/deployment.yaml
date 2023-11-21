@@ -1,4 +1,4 @@
-{{- if eq .Values.harbor.enabled true -}}
+{{- if eq .Values.enabled true -}}
 # Source: cluster-resources/charts/harbor/templates/portal/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -53,11 +53,11 @@ spec:
       - name: portal-config
         configMap:
           name: "vessl-harbor-portal"
-      {{- with .Values.harbor.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.harbor.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
