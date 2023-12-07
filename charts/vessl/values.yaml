@@ -383,6 +383,9 @@ local-path-provisioner:
 longhorn:
   enabled: true
   # https://longhorn.io/docs/1.5.1/advanced-resources/deploy/customizing-default-settings/#using-helm
+  persistence:
+    defaultClassReplicaCount: 1
+    defaultDataLocality: strict-local
   defaultSettings:
     defaultReplicaCount: 1
     defaultDataLocality: strict-local
