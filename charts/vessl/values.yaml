@@ -381,7 +381,7 @@ local-path-provisioner:
 
 # https://github.com/longhorn/longhorn/tree/master/chart
 longhorn:
-  enabled: true
+  enabled: false
   # https://longhorn.io/docs/1.5.1/advanced-resources/deploy/customizing-default-settings/#using-helm
   persistence:
     defaultClassReplicaCount: 1
