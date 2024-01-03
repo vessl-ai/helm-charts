@@ -12,5 +12,5 @@ jobs:
       - name: aron-backend
         uses: igabaydulin/helm-check-action@0.1.4
         env:
-          CHART_LOCATION: ./vessl
-          CHART_VALUES: ./vessl/values.yaml
+          CHART_LOCATION: ./charts/vessl
+          CHART_VALUES: ./charts/vessl/values.yaml
