@@ -45,7 +45,7 @@ spec:
               value: "{{ .Values.agent.clusterName }}"
             {{- end }}
             - name: VESSL_API_URL
-              value: "{{ .Values.agent.apiServer }}"
+              value: "{{ .Values.agent.apiServer | quote | tpl }}"
             - name: VESSL_LOG_LEVEL
               value: "{{ .Values.agent.logLevel }}"
             - name: VESSL_SENTRY_DSN
