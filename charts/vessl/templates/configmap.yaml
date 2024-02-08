@@ -81,7 +81,7 @@ data:
         follow_redirects: true
         enable_http2: true
         namespaces:
-          names: 
+          names:
           - {{ .Release.Namespace }}
 
     - job_name: vessl-kube-state-metrics
@@ -159,7 +159,7 @@ data:
         follow_redirects: true
         enable_http2: true
         namespaces:
-          names: 
+          names:
           - {{ .Release.Namespace }}
 
     - job_name: vessl-model-service-servicemonitor
@@ -193,7 +193,7 @@ data:
       metric_relabel_configs:
       - source_labels:
         - __name__
-        regex: (bentoml_(.+)|BENTOML_(.+)|nv_(.+)|Requests[245]XX|ts_inference_(.+))
+        regex: (bentoml_(.+)|BENTOML_(.+)|nv_(.+)|Requests[245]XX|ts_inference_(.+)|vllm:(.+)|vessl:(.+))
         action: keep
 
     - job_name: vessl-node-exporter-servicemonitor
@@ -268,7 +268,7 @@ data:
         follow_redirects: true
         enable_http2: true
         namespaces:
-          names: 
+          names:
           - {{ .Release.Namespace }}
 
     - job_name: kubernetes-nodes-kubelet
