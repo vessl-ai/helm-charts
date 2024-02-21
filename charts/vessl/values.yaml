@@ -18,8 +18,7 @@ agent:
       value: ""
       effect: "NoSchedule"
     - key: "node-role.kubernetes.io/control-plane"
-      operator: "Equal"
-      value: ""
+      operator: "Exists"
       effect: "NoSchedule"
     - key: "v1.k8s.vessl.ai/dedicated"
       operator: "Exists"
@@ -37,8 +36,7 @@ agent:
           preference:
             matchExpressions:
               - key: "node-role.kubernetes.io/control-plane"
-                operator: "In"
-                values: [""]
+                operator: "Exists"
         - weight: 2
           preference:
             matchExpressions:
@@ -93,8 +91,7 @@ nfd:
             preference:
               matchExpressions:
                 - key: "node-role.kubernetes.io/control-plane"
-                  operator: "In"
-                  values: [""]
+                  operator: "Exists"
           - weight: 2
             preference:
               matchExpressions:
@@ -153,8 +150,7 @@ kube-state-metrics:
       value: ""
       effect: "NoSchedule"
     - key: "node-role.kubernetes.io/control-plane"
-      operator: "Equal"
-      value: ""
+      operator: "Exists"
       effect: "NoSchedule"
     - key: "v1.k8s.vessl.ai/dedicated"
       operator: "Exists"
@@ -172,8 +168,7 @@ kube-state-metrics:
           preference:
             matchExpressions:
               - key: "node-role.kubernetes.io/control-plane"
-                operator: "In"
-                values: [""]
+                operator: "Exists"
         - weight: 2
           preference:
             matchExpressions:
@@ -261,8 +256,7 @@ prometheus-remote-write:
         value: ""
         effect: "NoSchedule"
       - key: "node-role.kubernetes.io/control-plane"
-        operator: "Equal"
-        value: ""
+        operator: "Exists"
         effect: "NoSchedule"
       - key: "v1.k8s.vessl.ai/dedicated"
         operator: "Exists"
@@ -280,8 +274,7 @@ prometheus-remote-write:
             preference:
               matchExpressions:
                 - key: "node-role.kubernetes.io/control-plane"
-                  operator: "In"
-                  values: [""]
+                  operator: "Exists"
           - weight: 2
             preference:
               matchExpressions:
@@ -356,12 +349,10 @@ local-path-provisioner:
     tag: "21.10"
   tolerations:
     - key: "node-role.kubernetes.io/master"
-      operator: "Equal"
       value: ""
       effect: "NoSchedule"
     - key: "node-role.kubernetes.io/control-plane"
-      operator: "Equal"
-      value: ""
+      operator: "Exists"
       effect: "NoSchedule"
     - key: "v1.k8s.vessl.ai/dedicated"
       operator: "Exists"
@@ -379,8 +370,7 @@ local-path-provisioner:
           preference:
             matchExpressions:
               - key: "node-role.kubernetes.io/control-plane"
-                operator: "In"
-                values: [""]
+                operator: "Exists"
         - weight: 2
           preference:
             matchExpressions:
