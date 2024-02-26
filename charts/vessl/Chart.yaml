@@ -46,3 +46,7 @@ dependencies:
 - name: harbor
   version: "1.0.1"
   condition: harbor.enabled
+- name: prometheus-adapter
+  version: "1.0.1"
+  condition: prometheus-adapter.enabled
+  repository: https://prometheus-community.github.io/helm-charts

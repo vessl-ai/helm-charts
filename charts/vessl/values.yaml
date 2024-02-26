@@ -393,3 +393,55 @@ longhorn:
 # https://github.com/vessl-ai/helm-charts/blob/main/charts/vessl/charts/harbor/values.yaml
 harbor:
   enabled: false
+
+# https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-adapter
+prometheus-adapter:
+  enabled: false
+
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      value: ""
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "v1.k8s.vessl.ai/dedicated"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/master"
+                operator: "In"
+                values: [""]
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/control-plane"
+                operator: "Exists"
+        - weight: 2
+          preference:
+            matchExpressions:
+              - key: "v1.k8s.vessl.ai/dedicated"
+                operator: "In"
+                values: ["manager"]
+
+  prometheus:
+    url: http://vessl-prometheus-remote-write-server.vessl.svc
+
+  rules:
+    default: false
+
+    custom:
+      - seriesQuery: 'DCGM_FI_DEV_GPU_UTIL{pod!=""}'
+        resources:
+          overrides:
+            namespace: {resource: "namespace"}
+            pod: {resource: "pod"}
+        name:
+          as: "gpu_util"
+        metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
