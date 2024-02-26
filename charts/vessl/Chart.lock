@@ -29,5 +29,8 @@ dependencies:
 - name: harbor
   repository: ""
   version: 1.0.1
-digest: sha256:101f07222ecd1b841f3c7a1b123a4aa6b3e9d06d1a08cf2bc087558f36cfe247
-generated: "2023-11-21T17:30:52.04519+09:00"
+- name: prometheus-adapter
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 1.0.1
+digest: sha256:8719efc3ddca018f491ed1cf36429e04072ccb35d9e14ef6605db09b075415ca
+generated: "2024-02-26T18:09:53.004295+09:00"
