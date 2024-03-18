@@ -226,7 +226,7 @@ dcgm-exporter:
 prometheus-remote-write:
   enabled: true
   server:
-    configMapOverrideName: vessl-prometheus-scrape-config 
+    configMapOverrideName: vessl-prometheus-scrape-config
     persistentVolume:
       enabled: false
     # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#remote_write
@@ -332,6 +332,10 @@ prometheus-remote-write:
     target_label: job
     replacement: ${1}
     action: replace
+  - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_partition"]
+    target_label: "vessl_partition"
+  - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_type"]
+    target_label: "vessl_type"
   - separator: ;
     regex: (.*)
     target_label: endpoint
