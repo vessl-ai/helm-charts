@@ -190,11 +190,6 @@ data:
         - __tmp_hash
         regex: 0
         action: keep
-      metric_relabel_configs:
-      - source_labels:
-        - __name__
-        regex: (bentoml_(.+)|BENTOML_(.+)|nv_(.+)|Requests[245]XX|ts_inference_(.+)|vllm:(.+)|vessl:(.+))
-        action: keep
 
     - job_name: vessl-node-exporter-servicemonitor
       honor_labels: true
