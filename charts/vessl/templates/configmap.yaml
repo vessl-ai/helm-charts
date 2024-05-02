@@ -12,8 +12,10 @@ data:
     remote_write:
 {{ index .Values "prometheus-remote-write" "server" "remoteWrite" | toYaml | indent 4 }}
     {{- end }}
+    {{- if index .Values "prometheus-remote-write" "server" "exporterScrapeJob" }}
     scrape_configs:
 {{ index .Values "prometheus-remote-write" "server" "exporterScrapeJob" | toYaml | indent 4 }}
+    {{- end }}
     - job_name: vessl-dcgm
       honor_labels: true
       honor_timestamps: true

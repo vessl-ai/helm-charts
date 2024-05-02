@@ -449,3 +449,12 @@ prometheus-adapter:
         name:
           as: "gpu_util"
         metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+
+  externalRules:
+    - seriesQuery: 'redis_request_queue_length{cluster!=""}'
+      resources:
+        overrides:
+          namespace: {resource: "namespace"}
+      name:
+        as: "request_queue_length"
+      metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>) / sum(kube_deployment_status_replicas_available{deployment="test-deployment"})
