@@ -2,6 +2,64 @@ apiVersion: v1
 entries:
   vessl:
   - apiVersion: v2
+    appVersion: 0.6.24
+    created: "2024-05-02T04:47:59.957066575Z"
+    dependencies:
+    - alias: nfd
+      condition: nfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.15.4
+    - alias: gfd
+      condition: gfd.enabled
+      name: gpu-feature-discovery
+      repository: https://nvidia.github.io/gpu-feature-discovery
+      version: 0.8.2
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.19.0
+    - alias: node-exporter
+      condition: node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.33.0
+    - condition: dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 3.4.1
+    - condition: nvidia-device-plugin.enabled
+      name: nvidia-device-plugin
+      repository: https://nvidia.github.io/k8s-device-plugin
+      version: 0.15.0
+    - alias: prometheus-remote-write
+      condition: prometheus-remote-write.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 23.2.0
+    - condition: longhorn.enabled
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: 1.5.1
+    - condition: local-path-provisioner.enabled
+      name: local-path-provisioner
+      repository: ""
+      version: 0.0.24
+    - condition: harbor.enabled
+      name: harbor
+      repository: ""
+      version: 1.0.1
+    - condition: prometheus-adapter.enabled
+      name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.9.0
+    digest: fd05a623b1e4ac36e036fb7e4838bc46342d5cb9fc1cb43f7ff9b6b02174f29f
+    name: vessl
+    type: application
+    urls:
+    - https://github.com/vessl-ai/helm-charts/releases/download/vessl-0.0.34/vessl-0.0.34.tgz
+    version: 0.0.34
+  - apiVersion: v2
     appVersion: 0.6.21
     created: "2024-04-16T09:02:25.953563766Z"
     dependencies:
@@ -1445,4 +1503,4 @@ entries:
     urls:
     - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.3.tgz
     version: 0.0.3
-generated: "2024-04-16T09:02:25.953752661Z"
+generated: "2024-05-02T04:47:59.957373521Z"
