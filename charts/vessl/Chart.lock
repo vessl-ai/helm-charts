@@ -1,22 +1,22 @@
 dependencies:
 - name: node-feature-discovery
   repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
-  version: 0.13.3
+  version: 0.15.4
 - name: gpu-feature-discovery
   repository: https://nvidia.github.io/gpu-feature-discovery
-  version: 0.8.1
+  version: 0.8.2
 - name: kube-state-metrics
   repository: https://prometheus-community.github.io/helm-charts
-  version: 5.10.1
+  version: 5.19.0
 - name: prometheus-node-exporter
   repository: https://prometheus-community.github.io/helm-charts
-  version: 4.21.0
+  version: 4.33.0
 - name: dcgm-exporter
   repository: https://nvidia.github.io/dcgm-exporter/helm-charts
-  version: 3.1.5
+  version: 3.4.1
 - name: nvidia-device-plugin
   repository: https://nvidia.github.io/k8s-device-plugin
-  version: 0.14.1
+  version: 0.15.0
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 23.2.0
@@ -32,5 +32,5 @@ dependencies:
 - name: prometheus-adapter
   repository: https://prometheus-community.github.io/helm-charts
   version: 4.9.0
-digest: sha256:1d6fedefba703d9c2fbf32e4e4a695a9598066ab1b25701f18ed6b8f86f278c6
-generated: "2024-02-27T12:05:24.229959+09:00"
+digest: sha256:c7ba7164b3c7d3077c93ed187d25de59d86f257f8afdc042d2deb4cadf487509
+generated: "2024-05-02T13:36:22.945593+09:00"

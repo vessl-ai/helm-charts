@@ -27,11 +27,11 @@ helm repo add nvidia-k8s-device-plugin https://nvidia.github.io/k8s-device-plugi
 helm repo update
 ```
 
-b. Build dependencies
+b. Update dependencies
 
 ```bash
 cd charts/vessl
-helm dependency build
+helm dependency update
 ```
 
 2. Make changes
