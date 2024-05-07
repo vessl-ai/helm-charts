@@ -456,5 +456,5 @@ prometheus-adapter:
         overrides:
           namespace: {resource: "namespace"}
       name:
-        as: "request_queue_length_{channel}"
-      metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>, channel=~".*"}) by (<<.GroupBy>>, channel)
+        as: "request_queue_length"
+      metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
