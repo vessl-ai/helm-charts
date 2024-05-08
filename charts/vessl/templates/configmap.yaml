@@ -13,6 +13,9 @@ data:
 {{ index .Values "prometheus-remote-write" "server" "remoteWrite" | toYaml | indent 4 }}
     {{- end }}
     scrape_configs:
+    {{- if index .Values "prometheus-remote-write" "server" "additionalScrapeJobs" }}
+{{ index .Values "prometheus-remote-write" "server" "additionalScrapeJobs" | toYaml | indent 4 }}
+    {{- end }}
     - job_name: vessl-dcgm
       honor_labels: true
       honor_timestamps: true

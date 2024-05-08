@@ -245,6 +245,7 @@ prometheus-remote-write:
             regex: minikube_(.+)
           - action: labeldrop
             regex: cloud_google_com_(.+)
+    additionalScrapeJobs: []
     extraSecretMounts:
       - name: "access-token"
         secretName: "vessl-agent"
