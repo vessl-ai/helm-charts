@@ -1,0 +1,55 @@
+{{- range $g := .Values.nodeGroups }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: overprovisioner-{{ $g.nickname }}
+  {{- with $g.deploymentLabels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ $g.count | int | toYaml }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $.Chart.Name | toString | toYaml }}
+      app.kubernetes.io/instance: {{ $.Release.Name | toString | toYaml }}
+      overprovisioner.v1.vessl.ai/instance: {{ $g.nickname }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with $g.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ $.Chart.Name | toString | toYaml }}
+        app.kubernetes.io/instance: {{ $.Release.Name | toString | toYaml }}
+        overprovisioner.v1.vessl.ai/instance: {{ $g.nickname }}
+        {{- with $g.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      priorityClassName: {{ $.Values.priorityClass.name }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          {{- with $g.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with $g.nodeSelectorLabels }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $g.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $g.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+---
+{{- end }}
