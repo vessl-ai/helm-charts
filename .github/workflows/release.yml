@@ -1,6 +1,7 @@
 name: Release Charts
 
 on:
+  workflow_dispatch: {}
   pull_request:
     types:
       - closed
@@ -9,7 +10,16 @@ on:
 
 jobs:
   release:
-    if: ${{ (github.event.pull_request.merged == true) && (contains(github.event.pull_request.labels.*.name, 'release')) }}
+    if: >
+      ${{
+        (
+          (github.event.pull_request.merged == true) &&
+          (contains(github.event.pull_request.labels.*.name, 'release'))
+        ) ||
+        (
+          github.event.workflow_dispatch != null
+        )
+      }}
     permissions:
       contents: write # to push chart release and create a release (helm/chart-releaser-action)
 
