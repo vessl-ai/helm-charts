@@ -1,0 +1,45 @@
+nodeGroups:
+  - nickname: l4-spot
+    count: 1
+    nodeSelector: {}
+    tolerations:
+      - key: nvidia.com/gpu
+        operator: Exists
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: v1.k8s.vessl.ai/v1.l4-1.mem-42.spot
+                  operator: In
+                  values:
+                    - 'true'
+    resources:
+      requests: { cpu: 6100m }
+
+    deploymentLabels: {}
+    podAnnotations: {}
+    podLabels: {}
+
+priorityClass:
+  create: true
+  name: overprovisioner-placeholder
+
+  # NOTE: value should be...
+  #
+  #   - LESS than workload pod's priority.
+  #     By default, we do not set PriorityClass to workload pods, and thus it
+  #     uses cluster's default PriorityClass if exists. In most of our configuration,
+  #     there is no default PriorityClass, and priority value falls back to zero.
+  #     Thus, in most configurations, this value should be < 0.
+  #
+  #   - GREATER OR EQUAL than cluster autoscaler's priority cutoff.
+  #     If the placeholder pods are deemed too little to cluster-autoscaler,
+  #     it won't allow the pods to hold onto resources and evict the nodes.
+  #     Default cutoff is -10, so this value should be >= -10 in most configurations.
+  value: -5
+
+image:
+  repository: k8s.gcr.io/pause
+  tag: 3.9
+  pullPolicy: IfNotPresent
