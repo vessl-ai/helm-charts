@@ -1,0 +1,18 @@
+apiVersion: v2
+name: registry-cache
+description: Proxy cache for OCI-based registry.
+type: application
+
+version: 0.1.0
+appVersion: 0.0.1
+
+dependencies:
+- name: zot
+  version: 0.1.56
+  repository: 'https://zotregistry.dev/helm-charts'
+  condition: zot.enabled
+
+- name: harbor
+  version: 1.15.0
+  repository: 'https://helm.goharbor.io'
+  condition: harbor.enabled

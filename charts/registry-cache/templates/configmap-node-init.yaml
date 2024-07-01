@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-node-init
+  namespace: {{ .Release.Namespace }}
+data:
+  node-init.py: |
+    {{- .Files.Get "files/node-init.py" | nindent 4 }}
+  node-init-entrypoint.sh: |
+    {{- .Files.Get "files/node-init-entrypoint.sh" | nindent 4 }}

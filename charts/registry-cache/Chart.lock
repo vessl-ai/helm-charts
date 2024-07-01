@@ -1,0 +1,9 @@
+dependencies:
+- name: zot
+  repository: https://zotregistry.dev/helm-charts
+  version: 0.1.56
+- name: harbor
+  repository: https://helm.goharbor.io
+  version: 1.15.0
+digest: sha256:55ae22ba26b5d66228fc87b12210ac671cc5a845361c8aa14e2a99c3eb8378b3
+generated: "2024-06-30T00:36:26.455399+09:00"
