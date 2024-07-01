@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-node-initializer
+  namespace: {{ .Release.Namespace }}
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name | toYaml }}
+      release: {{ .Release.Name | toYaml }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name | toYaml }}
+        release: {{ .Release.Name | toYaml }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: v1.k8s.vessl.ai/dedicated
+                    operator: DoesNotExist
+      tolerations:
+        - effect: NoSchedule
+          key: nvidia.com/gpu
+          operator: Exists
+      containers:
+        - name: node-init
+          image: python:3.12-slim
+          command:
+            - /bin/bash
+            - /opt/vessl/node-init-entrypoint.sh
+          volumeMounts:
+            - mountPath: '/opt/vessl'
+              name: configmap
+            - mountPath: '/host'
+              name: host
+          env:
+            - name: QUAY_MIRROR_URL
+              value: {{ .Values.registryCache.quayMirrorUrl | toString | toYaml }}
+            - name: SHOULD_ADD_GCR_MIRROR
+              value: {{ .Values.registryCache.useGcrMirror | toString | toYaml }}
+            - name: RESTART_CONTAINERD
+              value: {{ .Values.registryCache.restartContainerdInDaemonset | toString | toYaml }}
+            {{- with .Values.registryCache.containerdConfigPath }}
+            - name: CONTAINERD_CONFIG_PATH
+              value: {{ toString . | toYaml }}
+            {{- end }}
+            {{- with .Values.registryCache.containerdRegistryBasePath }}
+            - name: CONTAINERD_REGISTRY_BASE_PATH
+              value: {{ toString . | toYaml }}
+            {{- end }}
+          securityContext:
+            privileged: true
+      hostPID: true
+      volumes:
+        - name: configmap
+          configMap:
+            name: {{ .Release.Name }}-node-init
+        - name: host
+          hostPath:
+            path: /
