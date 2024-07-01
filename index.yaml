@@ -1,5 +1,36 @@
 apiVersion: v1
 entries:
+  overprovisioner:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2024-07-01T05:22:10.068150559Z"
+    description: Overprovisioner for cluster-autoscaler.
+    digest: 98c9bf11e74a0e4029b45732d11ba5ecb4b553112e5dfcb510567b24b8e1e9dd
+    name: overprovisioner
+    type: application
+    urls:
+    - https://github.com/vessl-ai/helm-charts/releases/download/overprovisioner-0.1.0/overprovisioner-0.1.0.tgz
+    version: 0.1.0
+  registry-cache:
+  - apiVersion: v2
+    appVersion: 0.0.1
+    created: "2024-07-01T05:22:10.175513293Z"
+    dependencies:
+    - condition: zot.enabled
+      name: zot
+      repository: https://zotregistry.dev/helm-charts
+      version: 0.1.56
+    - condition: harbor.enabled
+      name: harbor
+      repository: https://helm.goharbor.io
+      version: 1.15.0
+    description: Proxy cache for OCI-based registry.
+    digest: 96db7e8191f42500f2577692d8ac7c58b5485b77e1be263ccca55fb3fa9a1a9d
+    name: registry-cache
+    type: application
+    urls:
+    - https://github.com/vessl-ai/helm-charts/releases/download/registry-cache-0.1.0/registry-cache-0.1.0.tgz
+    version: 0.1.0
   vessl:
   - apiVersion: v2
     appVersion: 0.6.24
@@ -1561,4 +1592,4 @@ entries:
     urls:
     - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.3.tgz
     version: 0.0.3
-generated: "2024-05-08T08:29:13.887382567Z"
+generated: "2024-07-01T05:22:10.175596038Z"
