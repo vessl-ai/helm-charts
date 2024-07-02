@@ -43,9 +43,25 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if $g.affinity }}
       {{- with $g.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- else if $g.affinityLabels }}
+      {{- with $g.affinityLabels }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  {{- range $term := . }}
+                  - key: {{ $term.key | toString | toYaml }}
+                    operator: {{ $term.operator | toString | toYaml }}
+                    values:
+                      {{- $term.values | toYaml | nindent 22 }}
+                  {{- end }}
+      {{- end }}
       {{- end }}
       {{- with $g.tolerations }}
       tolerations:

@@ -1,19 +1,23 @@
 nodeGroups:
   - nickname: l4-spot
     count: 1
-    nodeSelector: {}
     tolerations:
       - key: nvidia.com/gpu
         operator: Exists
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: v1.k8s.vessl.ai/v1.l4-1.mem-42.spot
-                  operator: In
-                  values:
-                    - 'true'
+
+    # Helper value for setting the pod's node affinity; there is no 'affinityLabels' in Kubernetes.
+    # If `.affinity != null`, this value will be ignored.
+    affinityLabels:
+      - key: v1.k8s.vessl.ai/v1.l4-1.mem-42.spot
+        operator: In
+        values:
+          - 'true'
+
+    # Set this value if you want to override the pod's affinity.
+    # If this is not null, `.affinityLabels` will be ignored, and the pod spec's
+    # affinity section will be set to this value.
+    affinity: null
+
     resources:
       requests: { cpu: 6100m }
 
