@@ -3,6 +3,16 @@ entries:
   overprovisioner:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2024-07-02T05:36:48.062711661Z"
+    description: Overprovisioner for cluster-autoscaler.
+    digest: a0d39630c1e632a08a371d8151c6039cbada6354195576b4593b5309630977a1
+    name: overprovisioner
+    type: application
+    urls:
+    - https://github.com/vessl-ai/helm-charts/releases/download/overprovisioner-0.2.0/overprovisioner-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2024-07-01T05:22:10.068150559Z"
     description: Overprovisioner for cluster-autoscaler.
     digest: 98c9bf11e74a0e4029b45732d11ba5ecb4b553112e5dfcb510567b24b8e1e9dd
@@ -1592,4 +1602,4 @@ entries:
     urls:
     - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.3.tgz
     version: 0.0.3
-generated: "2024-07-01T05:22:10.175596038Z"
+generated: "2024-07-02T05:36:48.062803112Z"
