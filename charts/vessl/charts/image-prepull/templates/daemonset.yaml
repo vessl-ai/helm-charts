@@ -15,11 +15,14 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
       initContainers:
       {{- range .Values.images }}
         {{- $imageName := .name }}
         {{- range .tags }}
-      - name: pull-{{ $imageName }}-{{ . | replace ":" "-" | replace "." "-" }}
+      - name: pull-{{ include "imagePrepull.truncateImageName" $imageName }}-{{ . | replace ":" "-" | replace "." "-" }}
         image: {{ $imageName }}:{{ . }}
         command: ['sh', '-c', 'echo Image {{ $imageName }}:{{ . }} pulled']
         imagePullPolicy: {{ $.Values.imagePullPolicy }}
