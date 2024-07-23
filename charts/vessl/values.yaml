@@ -450,3 +450,5 @@ prometheus-adapter:
         name:
           as: "gpu_util"
         metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
+pre-pull:
+  enabled: false
