@@ -1,4 +1,3 @@
-defaultRegistry: docker.io
 images:
   - name: vllm/vllm-openai
     tags:
