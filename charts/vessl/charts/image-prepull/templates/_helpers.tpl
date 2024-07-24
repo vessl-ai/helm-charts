@@ -2,7 +2,7 @@
 Truncate and clean image name for use in container names
 */}}
 
-{{- define "imagePrepull.truncateImageName" -}}
+{{- define "image-prepull.truncateImageName" -}}
 {{- $parts := splitList "/" . -}}
 {{- $name := last $parts -}}
 {{- $truncated := trunc 40 $name -}}

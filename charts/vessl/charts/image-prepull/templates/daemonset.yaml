@@ -22,7 +22,7 @@ spec:
       {{- range .Values.images }}
         {{- $imageName := .name }}
         {{- range .tags }}
-      - name: pull-{{ include "imagePrepull.truncateImageName" $imageName }}-{{ . | replace ":" "-" | replace "." "-" }}
+      - name: pull-{{ include "image-prepull.truncateImageName" $imageName }}-{{ . | replace ":" "-" | replace "." "-" }}
         image: {{ $imageName }}:{{ . }}
         command: ['sh', '-c', 'echo Image {{ $imageName }}:{{ . }} pulled']
         imagePullPolicy: {{ $.Values.imagePullPolicy }}
