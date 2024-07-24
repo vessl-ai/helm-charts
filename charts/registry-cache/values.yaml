@@ -12,60 +12,6 @@ registryCache:
 
   restartContainerdInDaemonset: true
 
-zot:
-  enabled: false
-
-  replicaCount: 1
-  service:
-    type: ClusterIP
-    port: 80
-    annotations: {}
-    clusterIP: 10.96.0.64 # NOTE: change this according to Service CIDR
-
-  # By default, Kubernetes HTTP probes use HTTP 'scheme'. So if TLS is enabled
-  # in configuration, to prevent failures, the scheme must be set to 'HTTPS'.
-  httpGet:
-    scheme: HTTP
-
-  # Mount 
-  mountConfig: false
-  configFiles: null
-  extraVolumeMounts:
-    - mountPath: '/etc/zot'
-      name: config
-  extraVolumes:
-    - name: config
-      configMap:
-        name: registry-cache-zot-config
-
-  externalSecrets: []
-  mountSecret: false
-
-  persistence: true
-  pvc:
-    create: true
-    name: null
-    storage: 100Gi
-    storageClassName: null
-
-  podAnnotations: {}
-
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: v1.k8s.vessl.ai/dedicated
-                operator: In
-                values:
-                  - manager
-
-  tolerations:
-    - key: v1.k8s.vessl.ai/dedicated
-      operator: Equal
-      effect: NoSchedule
-      value: manager
-
 harbor:
   enabled: false
   expose:
