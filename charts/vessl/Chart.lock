@@ -32,5 +32,8 @@ dependencies:
 - name: prometheus-adapter
   repository: https://prometheus-community.github.io/helm-charts
   version: 4.9.0
-digest: sha256:c7ba7164b3c7d3077c93ed187d25de59d86f257f8afdc042d2deb4cadf487509
-generated: "2024-05-02T13:36:22.945593+09:00"
+- name: image-prepull
+  repository: ""
+  version: 0.1.0
+digest: sha256:940ab3f40a994af07a8348b06a6d1514e91a7de618aba350d95e02497bb14a2f
+generated: "2024-07-24T10:06:35.044673+09:00"
