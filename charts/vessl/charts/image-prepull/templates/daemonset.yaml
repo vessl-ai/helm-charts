@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Release.Name }}-image-prepull
+spec:
+  selector:
+    matchLabels:
+      app: image-prepull
+  template:
+    metadata:
+      labels:
+        app: image-prepull
+    spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+      initContainers:
+      {{- range .Values.images }}
+        {{- $imageName := .name }}
+        {{- range .tags }}
+      - name: pull-{{ include "imagePrepull.truncateImageName" $imageName }}-{{ . | replace ":" "-" | replace "." "-" }}
+        image: {{ $imageName }}:{{ . }}
+        command: ['sh', '-c', 'echo Image {{ $imageName }}:{{ . }} pulled']
+        imagePullPolicy: {{ $.Values.imagePullPolicy }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: pause
+        image: k8s.gcr.io/pause:3.2

@@ -1,0 +1,17 @@
+images:
+  - name: vllm/vllm-openai
+    tags:
+      - v0.5.2
+      - v0.5.1
+      - v0.5.0
+      - v0.4.3
+      - v0.4.2
+  - name: ghcr.io/huggingface/text-generation-inference
+    tags:
+      - 2.1.1
+      - 2.1.0
+      - 2.0.4
+      - 2.0.3
+      - 2.0.2
+imagePullPolicy: Always
+nodeSelector: {}
