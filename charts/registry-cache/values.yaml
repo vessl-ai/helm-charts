@@ -61,13 +61,6 @@ harbor:
         accessMode: ReadWriteOnce
         size: 1Gi
         annotations: {}
-      trivy:
-        existingClaim: ""
-        storageClass: ""
-        subPath: ""
-        accessMode: ReadWriteOnce
-        size: 5Gi
-        annotations: {}
 
     # Define which storage backend is used for registry to store
     # images and charts. Refer to
@@ -78,9 +71,9 @@ harbor:
 
   # The initial password of Harbor admin. Change it from portal after launching Harbor
   # or give an existing secret for it
-  # key in secret is given via (default to HARBOR_ADMIN_PASSWORD)
+  # key in secret is given via existingSecretAdminPasswordKey (default to HARBOR_ADMIN_PASSWORD)
   # existingSecretAdminPassword:
-  existingSecretAdminPasswordKey: HARBOR_ADMIN_PASSWORD
+  # existingSecretAdminPasswordKey: HARBOR_ADMIN_PASSWORD
   harborAdminPassword: "Harbor12345"
 
   ipFamily: {ipv6: {enabled: false}}
@@ -112,7 +105,7 @@ harbor:
     revisionHistoryLimit: 1
     resources:
       limits: {}
-      requests: {}
+      requests: { cpu: 500m, memory: 512Mi }
     extraEnvVars: []
     nodeSelector: {}
     tolerations: []
@@ -135,7 +128,7 @@ harbor:
     revisionHistoryLimit: 1
     resources:
       limits: {}
-      requests: {}
+      requests: { cpu: 100m, memory: 256Mi }
     extraEnvVars: []
     nodeSelector: {}
     tolerations: []
@@ -159,7 +152,7 @@ harbor:
     revisionHistoryLimit: 1
     resources:
       limits: {}
-      requests: {}
+      requests: { cpu: 500m, memory: 512Mi }
     extraEnvVars: []
     nodeSelector: {}
     tolerations: []
@@ -190,10 +183,10 @@ harbor:
     # mount the service account token
     automountServiceAccountToken: false
     replicas: 1
-    revisionHistoryLimit: 10
+    revisionHistoryLimit: 1
     resources:
       limits: {}
-      requests: {}
+      requests: { cpu: 100m, memory: 256Mi }
     extraEnvVars: []
     nodeSelector: {}
     tolerations: []
@@ -221,14 +214,14 @@ harbor:
         tag: v2.11.0
       resources:
         limits: {}
-        requests: {}
+        requests: { cpu: 100m, memory: 256Mi }
     controller:
       image:
         repository: goharbor/harbor-registryctl
         tag: v2.11.0
       resources:
         limits: {}
-        requests: {}
+        requests: { cpu: 100m, memory: 256Mi }
       extraEnvVars: []
     replicas: 1
     revisionHistoryLimit: 1
@@ -263,7 +256,7 @@ harbor:
         tag: v2.11.0
       resources:
         limits: {}
-        requests: {}
+        requests: { cpu: 100m, memory: 256Mi }
       nodeSelector: {}
       tolerations: []
       affinity: {}
@@ -305,7 +298,7 @@ harbor:
       automountServiceAccountToken: false
       resources:
         limits: {}
-        requests: {}
+        requests: { cpu: 100m, memory: 256Mi }
       extraEnvVars: []
       nodeSelector: {}
       tolerations: []
@@ -324,7 +317,7 @@ harbor:
     revisionHistoryLimit: 1
     resources:
       limits: {}
-      requests: {}
+      requests: { cpu: 100m, memory: 256Mi }
     extraEnvVars: []
     podAnnotations: {}
     podLabels: {}
