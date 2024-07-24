@@ -29,6 +29,11 @@ spec:
         - effect: NoSchedule
           key: nvidia.com/gpu
           operator: Exists
+      {{- if .Values.registryCache.untaint.enabled }}
+        - effect: NoSchedule
+          key: taint.v1.k8s.vessl.ai/registry-cache
+          operator: Exists
+      {{- end }}
       containers:
         - name: node-init
           image: python:3.12-slim
@@ -55,6 +60,12 @@ spec:
             - name: CONTAINERD_REGISTRY_BASE_PATH
               value: {{ toString . | toYaml }}
             {{- end }}
+            - name: SHOULD_REMOVE_NODE_TAINT
+              value: {{ or .Values.registryCache.untaint.enabled false | toString | toYaml }}
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           securityContext:
             privileged: true
       hostPID: true
@@ -65,3 +76,8 @@ spec:
         - name: host
           hostPath:
             path: /
+      {{- with .Values.registryCache.untaint }}
+      {{- if .enabled }}
+      serviceAccountName: {{ .serviceAccount }}
+      {{- end }}
+      {{- end }}

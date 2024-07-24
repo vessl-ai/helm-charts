@@ -1,0 +1,12 @@
+{{- with .Values.registryCache.untaint }}
+{{- if .enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .clusterRole }}
+rules:
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "patch"]
+{{- end }}
+{{- end }}

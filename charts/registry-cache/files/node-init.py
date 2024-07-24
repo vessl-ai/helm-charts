@@ -8,17 +8,24 @@ It patches containerd config to use a mirror for Quay.
 import datetime
 import os
 import subprocess
+import typing
+from typing import List
 
 import tomli
 import tomli_w
+from kubernetes import client, config
+from kubernetes.client.models import V1NodeList, V1Node, V1NodeSpec, V1Taint
 
 HOST_PATH = '/host'
 CONTAINERD_CONFIG_PATH = os.environ.get('CONTAINERD_CONFIG_PATH', '').strip() or '/etc/containerd/config.toml'
 OVERRIDE_MAGIC = '__VESSL_OVERRIDDEN__'
 CONTAINERD_REGISTRY_BASE_PATH = os.environ.get('CONTAINERD_REGISTRY_BASE_PATH', '').strip() or '/etc/containerd/vessl_hosts'
+NODE_TAINT_NAME = 'taint.v1.k8s.vessl.ai/registry-cache'
 QUAY_MIRROR_URL_ENVVAR_NAME = 'QUAY_MIRROR_URL'
 SHOULD_ADD_GCR_MIRROR_ENVVAR_NAME = 'SHOULD_ADD_GCR_MIRROR'
 RESTART_CONTAINERD_ENVVAR_NAME = 'RESTART_CONTAINERD'
+SHOULD_REMOVE_NODE_TAINT_ENVVAR_NAME = 'SHOULD_REMOVE_NODE_TAINT'
+NODE_NAME_ENVVAR_NAME = 'NODE_NAME'
 
 class NodeInitError(Exception):
     pass
@@ -26,6 +33,9 @@ class NodeInitError(Exception):
 def _log(message: str):
     time_str = datetime.datetime.now().isoformat()
     print(f'{time_str}: {message}')
+
+def _is_truthy(value: str) -> bool:
+    return value.strip().lower() in ['1', 'true', 'yes', 'y']
 
 def _hosts_toml_quay_io():
     quay_mirror_url = os.environ.get(QUAY_MIRROR_URL_ENVVAR_NAME, '').strip()
@@ -49,8 +59,7 @@ server = "https://quay.io"
     ).lstrip()
 
 def _hosts_toml_docker_io():
-    should_add_gcr_mirror_str = os.environ.get(SHOULD_ADD_GCR_MIRROR_ENVVAR_NAME, '').strip()
-    should_add_gcr_mirror = should_add_gcr_mirror_str.lower() in ['1', 'true', 'yes']
+    should_add_gcr_mirror = _is_truthy(os.environ.get(SHOULD_ADD_GCR_MIRROR_ENVVAR_NAME, ''))
 
     _log(f"Should add GCR mirror to docker.io?... {should_add_gcr_mirror}")
 
@@ -162,6 +171,45 @@ def _restart_containerd():
     ).check_returncode()
     _log("Successfully restarted containerd.")
 
+def _remove_node_taint():
+    should_remove_taint = _is_truthy(os.environ.get(SHOULD_REMOVE_NODE_TAINT_ENVVAR_NAME, ''))
+    if not should_remove_taint:
+        _log("Not indicated to remove node taint, so will not remove taint.")
+        return
+
+    node_name = os.environ.get(NODE_NAME_ENVVAR_NAME, "").strip()
+    if not node_name:
+        _log(f"Cannot find node name (in envvar {NODE_NAME_ENVVAR_NAME})!")
+        _log("Will not remove node taint.")
+        return
+
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+
+    _log(f"Trying to read node {node_name}...")
+    node: V1Node = v1.read_node(name=node_name) # type: ignore
+    _log(f"Successfully read node {node_name} from Kubernetes API.")
+
+    spec: V1NodeSpec = node.spec # type: ignore
+    taints: List[V1Taint] = spec.taints # type: ignore
+
+    for i, taint in enumerate(taints):
+        key: str = taint.key # type: ignore
+        if key == NODE_TAINT_NAME:
+            break
+    else:
+        # prepare pretty message
+        keys: List[str] = [taint.key for taint in taints] # type: ignore
+        _log(f"No matching taint found on node {node_name}.")
+        _log(f"Expected: {NODE_TAINT_NAME}, saw: {', '.join(keys)}")
+        return
+    
+    _log(f"Found taint: {taint}")
+    new_taints = taints[:i] + taints[i+1:]
+    _log("Trying to patch node to not have this taint...")
+    v1.patch_node(node_name, { "spec": { "taints": new_taints } })
+    _log("Done.")
+
 def main():
     print('Phew! We made it.')
 
@@ -183,6 +231,8 @@ def main():
         _restart_containerd()
     else:
         _log("Will not restart containerd (because config says so); please do that manually.")
+    
+    _remove_node_taint()
 
 if __name__ == "__main__":
     main()
