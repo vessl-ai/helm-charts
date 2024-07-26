@@ -1,0 +1,16 @@
+{{- with .Values.registryCache.untaint }}
+{{- if .enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .clusterRoleBinding }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .serviceAccount }}
+  namespace: {{ $.Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .clusterRole }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
+{{- end }}
