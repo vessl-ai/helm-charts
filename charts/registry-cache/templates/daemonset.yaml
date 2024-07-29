@@ -31,7 +31,7 @@ spec:
           operator: Exists
       {{- if .Values.registryCache.untaint.enabled }}
         - effect: NoSchedule
-          key: taint.v1.k8s.vessl.ai/registry-cache
+          key: startup-taint.cluster-autoscaler.kubernetes.io/registry-cache
           operator: Exists
       {{- end }}
       containers:
