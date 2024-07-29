@@ -3,7 +3,7 @@ name: registry-cache
 description: Proxy cache for OCI-based registry.
 type: application
 
-version: 0.4.0
+version: 0.4.1
 appVersion: 0.0.1
 
 dependencies:
