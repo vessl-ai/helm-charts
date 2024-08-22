@@ -74,14 +74,17 @@ def _hosts_toml_quay_io(runtime: str) -> str:
         return (
     f"""
 [[registry]]
-prefix = "quay.io/vessl-ai"
+prefix = "quay.io"
 insecure = false
 blocked = false
+location = "quay.io"
+[[registry.mirror]]
+insecure = true
 location = "{quay_mirror_url}"
 """
         ).lstrip()
 
-def _hosts_toml_docker_io(runtime: dict):
+def _hosts_toml_docker_io(runtime: str) -> str:
     should_add_gcr_mirror = _is_truthy(os.environ.get(SHOULD_ADD_GCR_MIRROR_ENVVAR_NAME, ''))
 
     _log(f"Should add GCR mirror to docker.io?... {should_add_gcr_mirror}")
@@ -98,7 +101,7 @@ server = "https://docker.io"
 """
         ).lstrip()
     else:
-        if runtime['name'] == CONTAINERD['name']:
+        if runtime == CONTAINERD['name']:
             return (
     """
     server = "https://docker.io"
@@ -107,7 +110,7 @@ server = "https://docker.io"
       capabilities = ["pull", "resolve"]
     """
             ).lstrip()
-        elif runtime['name'] == CRI_O['name']:
+        elif runtime == CRI_O['name']:
             return (
     """
 [[registry]]
@@ -116,7 +119,8 @@ insecure = false
 blocked = false
 location = "docker.io"
 [[registry.mirror]]
-location = "https://registry-1.docker.io"
+location = "registry-1.docker.io"
+insecure = false
 """
             ).lstrip()
 
