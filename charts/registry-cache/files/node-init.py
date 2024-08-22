@@ -24,16 +24,16 @@ SHOULD_ADD_GCR_MIRROR_ENVVAR_NAME = 'SHOULD_ADD_GCR_MIRROR'
 SHOULD_REMOVE_NODE_TAINT_ENVVAR_NAME = 'SHOULD_REMOVE_NODE_TAINT'
 NODE_NAME_ENVVAR_NAME = 'NODE_NAME'
 CONTAINERD = {
-    'name': 'containerd',
-    'config_path': os.environ.get('CONTAINERD_CONFIG_PATH', '').strip() or '/etc/containerd/config.toml',
-    'registry_base_path': os.environ.get('CONTAINERD_REGISTRY_BASE_PATH', '').strip() or '/etc/containerd/vessl_hosts',
-    'restart_envvar_name': 'RESTART_CONTAINERD'
+    'NAME': 'containerd',
+    'CONFIG_PATH': os.environ.get('CONTAINERD_CONFIG_PATH', '').strip() or '/etc/containerd/config.toml',
+    'REGISTRY_BASE_PATH': os.environ.get('CONTAINERD_REGISTRY_BASE_PATH', '').strip() or '/etc/containerd/vessl_hosts',
+    'RESTART_ENVVAR_NAME': 'RESTART_CONTAINERD'
 }
 CRI_O = {
-    'name': 'crio',
-    'config_path': '/etc/containers/registries.conf',
-    'registry_base_path': '/etc/containers/registries.conf.d',
-    'restart_envvar_name': 'RESTART_CRIO'
+    'NAME': 'crio',
+    'CONFIG_PATH': '/etc/containers/registries.conf',
+    'REGISTRY_BASE_PATH': '/etc/containers/registries.conf.d',
+    'RESTART_ENVVAR_NAME': 'RESTART_CRIO'
 }
 SUPPORTED_RUNTIMES = [CONTAINERD, CRI_O]
 
@@ -58,7 +58,7 @@ def _hosts_toml_quay_io(runtime: str) -> str:
 
     _log(f"Using Quay mirror URL: {quay_mirror_url}")
 
-    if runtime == CONTAINERD['name']:
+    if runtime == CONTAINERD['NAME']:
         if not quay_mirror_url.startswith(('http://', 'https://')):
             quay_mirror_url = 'http://' + quay_mirror_url
 
@@ -70,7 +70,7 @@ def _hosts_toml_quay_io(runtime: str) -> str:
       override_path = true
     """
         ).lstrip()
-    elif runtime == CRI_O['name']:
+    elif runtime == CRI_O['NAME']:
         return (
     f"""
 [[registry]]
@@ -101,7 +101,7 @@ server = "https://docker.io"
 """
         ).lstrip()
     else:
-        if runtime == CONTAINERD['name']:
+        if runtime == CONTAINERD['NAME']:
             return (
     """
     server = "https://docker.io"
@@ -110,9 +110,9 @@ server = "https://docker.io"
       capabilities = ["pull", "resolve"]
     """
             ).lstrip()
-        elif runtime == CRI_O['name']:
+        elif runtime == CRI_O['NAME']:
             return (
-    """
+"""
 [[registry]]
 prefix = "docker.io"
 insecure = false
@@ -125,13 +125,13 @@ insecure = false
             ).lstrip()
 
 def _build_registry_directory(runtime: dict):
-    base_path = HOST_PATH + runtime['registry_base_path']
+    base_path = HOST_PATH + runtime['REGISTRY_BASE_PATH']
 
     os.makedirs(base_path, exist_ok=True)
     open(base_path + "/__README__.txt", 'w').write(
 f"""
 This directory (and its contents) is created by cloud node initialization script from VESSL.
-These files are parsed by {runtime['name']}, which then refer to right services when pulling images.
+These files are parsed by {runtime['NAME']}, which then refer to right services when pulling images.
 """.lstrip()
     )
 
@@ -146,20 +146,20 @@ These files are parsed by {runtime['name']}, which then refer to right services 
         _log(f"Successfully wrote {full_path}.")
         _log(f"NOTE: content:\n{content}")
 
-    if runtime['name'] == CONTAINERD['name']:
-        _write_file_with_log(base_path + "/quay.io", "hosts.toml", _hosts_toml_quay_io(runtime['name']))  # basename 보기
-        _write_file_with_log(base_path + "/docker.io", "hosts.toml", _hosts_toml_docker_io(runtime['name']))
-    elif runtime['name'] == CRI_O['name']:
-        _write_file_with_log(base_path, "quay.conf", _hosts_toml_quay_io(runtime['name']))
-        _write_file_with_log(base_path, "docker.conf", _hosts_toml_docker_io(runtime['name']))
+    if runtime['NAME'] == CONTAINERD['NAME']:
+        _write_file_with_log(base_path + "/quay.io", "hosts.toml", _hosts_toml_quay_io(runtime['NAME']))  # basename 보기
+        _write_file_with_log(base_path + "/docker.io", "hosts.toml", _hosts_toml_docker_io(runtime['NAME']))
+    elif runtime['NAME'] == CRI_O['NAME']:
+        _write_file_with_log(base_path, "quay.conf", _hosts_toml_quay_io(runtime['NAME']))
+        _write_file_with_log(base_path, "docker.conf", _hosts_toml_docker_io(runtime['NAME']))
 
     _log(f"Successfully created host directory at: {base_path}")
 
 def _patch_containerd_config():
-    config_path = HOST_PATH + CONTAINERD['config_path']
+    config_path = HOST_PATH + CONTAINERD['CONFIG_PATH']
     config_content_raw = open(config_path, encoding='utf-8').read()
     if OVERRIDE_MAGIC in config_content_raw:
-        _log(f"Found magic string ({OVERRIDE_MAGIC}) in containerd config; "+
+        _log(f"Found magic string ({OVERRIDE_MAGIC}) in containerd config; " +
              "assuming already patched, will not touch it.")
         _log(f"NOTE: current containerd config:\n{config_content_raw}")
         return
@@ -167,7 +167,7 @@ def _patch_containerd_config():
     config = tomli.loads(config_content_raw)
     version = config.get('version', None)
     if version is None or version not in [2, 3]:
-        _log(f"Could not find valid version from containerd config file ({CONTAINERD['config_path']}).")
+        _log(f"Could not find valid version from containerd config file ({CONTAINERD['CONFIG_PATH']}).")
         _log("Specifically, I expected either version 2 or 3, but got: {version}.")
         _log("The containerd config file is either damaged, or has a format that I don't understand.")
         _log("Aborting to avoid possible damages.")
@@ -194,9 +194,9 @@ def _patch_containerd_config():
         old_path = registry_entry['config_path']
         _log(f"Containerd config already has config_path: {old_path}")
         _log("Appending our config dir to it.")
-        registry_entry['config_path'] = f"{old_path}:{CONTAINERD['registry_base_path']}"
+        registry_entry['config_path'] = f"{old_path}:{CONTAINERD['REGISTRY_BASE_PATH']}"
     else:
-        registry_entry['config_path'] = CONTAINERD['registry_base_path']
+        registry_entry['config_path'] = CONTAINERD['REGISTRY_BASE_PATH']
 
     new_config_content_raw = tomli_w.dumps(config)
     new_config_content_raw += f"\n\n# {OVERRIDE_MAGIC}\n"
@@ -247,7 +247,7 @@ def _remove_node_taint():
         _log(f"No matching taint found on node {node_name}.")
         _log(f"Expected: {NODE_TAINT_NAME}, saw: {', '.join(keys)}")
         return
-    
+
     _log(f"Found taint: {taint}")
     new_taints = taints[:i] + taints[i+1:]
     _log("Trying to patch node to not have this taint...")
@@ -255,13 +255,13 @@ def _remove_node_taint():
     _log("Done.")
 
 def _find_container_runtime() -> dict:
-    if os.path.exists(HOST_PATH + CONTAINERD['config_path']):
+    if os.path.exists(HOST_PATH + CONTAINERD['CONFIG_PATH']):
         return CONTAINERD
-    elif os.path.exists(HOST_PATH + CRI_O['config_path']):
+    elif os.path.exists(HOST_PATH + CRI_O['CONFIG_PATH']):
         return CRI_O
     else:
         raise NodeInitError(
-            f"Cannot find container runtime config file (please check if {' or '.join([runtime['name'] for runtime in SUPPORTED_RUNTIMES])} is installed)")
+            f"Cannot find container runtime config file (please check if {' or '.join([runtime['NAME'] for runtime in SUPPORTED_RUNTIMES])} is installed)")
 
 def main():
     print('Phew! We made it.')
@@ -275,15 +275,15 @@ def main():
     runtime = _find_container_runtime()
     _build_registry_directory(runtime)
 
-    if runtime['name'] == CONTAINERD['name']:
+    if runtime['NAME'] == CONTAINERD['NAME']:
         _patch_containerd_config()
-        if os.environ.get(CONTAINERD['restart_envvar_name'], '').lower().strip() in ['1', 'yes', 'true']:
-            _restart_runtime(runtime['name'])
+        if os.environ.get(CONTAINERD['RESTART_ENVVAR_NAME'], '').lower().strip() in ['1', 'yes', 'true']:
+            _restart_runtime(runtime['NAME'])
         else:
             _log("Will not restart containerd (because config says so); please do that manually.")
-    elif runtime['name'] == CRI_O['name']:
-        if os.environ.get(CRI_O['restart_envvar_name'], '').lower().strip() in ['1', 'yes', 'true']:
-            _restart_runtime(runtime['name'])
+    elif runtime['NAME'] == CRI_O['NAME']:
+        if os.environ.get(CRI_O['RESTART_ENVVAR_NAME'], '').lower().strip() in ['1', 'yes', 'true']:
+            _restart_runtime(runtime['NAME'])
         else:
             _log("Will not restart cri-o (because config says so); please do that manually.")
 
