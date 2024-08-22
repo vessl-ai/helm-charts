@@ -50,6 +50,8 @@ spec:
               value: {{ .Values.registryCache.quayMirrorUrl | toString | toYaml }}
             - name: SHOULD_ADD_GCR_MIRROR
               value: {{ .Values.registryCache.useGcrMirror | toString | toYaml }}
+            - name: RESTART_CRIO
+              value: { { .Values.registryCache.restartCrioInDaemonset | toString | toYaml } }
             - name: RESTART_CONTAINERD
               value: {{ .Values.registryCache.restartContainerdInDaemonset | toString | toYaml }}
             {{- with .Values.registryCache.containerdConfigPath }}
