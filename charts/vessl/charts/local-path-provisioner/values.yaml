@@ -98,6 +98,8 @@ affinity: {}
 configmap:
   # specify the config map name
   name: local-path-config
+  # whether to create (and manage) the config map. If set to false, many other options are ignored.
+  create: true
   # specify the custom script for setup and teardown
   setup: |-
     #!/bin/sh

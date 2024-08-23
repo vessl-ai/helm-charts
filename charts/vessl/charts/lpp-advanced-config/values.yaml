@@ -1,0 +1,10 @@
+config_map_name: local-path-config
+
+path:
+  default: /opt/local-path-provisioner
+  node_override:
+  #  - node_name: n01
+  #    path: /mnt/data
+
+xfs_quota:
+  enabled: false

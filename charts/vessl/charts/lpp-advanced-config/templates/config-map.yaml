@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Values.config_map_name }}
+data:
+  config.json: |-
+    {{- include "lpp_advanced_config.config_json_content" . | fromYaml | toPrettyJson | nindent 4 }}
+{{- with .Values.xfs_quota }}
+{{- if .enabled }}
+  setup: |-
+    {{- $.Files.Get "files/setup.sh" | nindent 4 }}
+  teardown: |-
+    {{- $.Files.Get "files/teardown.sh" | nindent 4 }}
+  helperPod.yaml: |-
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: helper-pod
+    spec:
+      containers:
+        - name: helper-pod
+          image: ubuntu:22.04
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - name: xfs-quota-projects
+            mountPath: /etc/projects
+          - name: xfs-quota-projid
+            mountPath: /etc/projid
+          - name: device-dir
+            mountPath: /dev
+      volumes:
+      - name: xfs-quota-projects
+        hostPath:
+          path: /etc/projects
+          type: FileOrCreate
+      - name: xfs-quota-projid
+        hostPath:
+          path: /etc/projid
+          type: FileOrCreate
+      - name: device-dir
+        hostPath:
+          path: /dev
+{{- end }}
+{{- end }}

@@ -53,3 +53,6 @@ dependencies:
 - name: image-prepull
   version: "0.1.0"
   condition: image-prepull.enabled
+- name: lpp-advanced-config
+  version: "0.1.0"
+  condition: lpp-advanced-config.enabled
