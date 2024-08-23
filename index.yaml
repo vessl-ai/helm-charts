@@ -24,6 +24,21 @@ entries:
   registry-cache:
   - apiVersion: v2
     appVersion: 0.0.1
+    created: "2024-08-23T05:03:54.182316834Z"
+    dependencies:
+    - condition: harbor.enabled
+      name: harbor
+      repository: https://helm.goharbor.io
+      version: 1.15.0
+    description: Proxy cache for OCI-based registry.
+    digest: b37f33f76182d035ee7523d2cd6445e1d5f039b19ff5d82aff07a86f066e3ed0
+    name: registry-cache
+    type: application
+    urls:
+    - https://github.com/vessl-ai/helm-charts/releases/download/registry-cache-0.4.3/registry-cache-0.4.3.tgz
+    version: 0.4.3
+  - apiVersion: v2
+    appVersion: 0.0.1
     created: "2024-08-23T04:44:18.033201084Z"
     dependencies:
     - condition: harbor.enabled
@@ -1801,4 +1816,4 @@ entries:
     urls:
     - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.3.tgz
     version: 0.0.3
-generated: "2024-08-23T04:44:18.033307684Z"
+generated: "2024-08-23T05:03:54.182406042Z"
