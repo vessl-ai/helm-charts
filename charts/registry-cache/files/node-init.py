@@ -110,19 +110,6 @@ server = "https://docker.io"
       capabilities = ["pull", "resolve"]
     """
             ).lstrip()
-        elif runtime == CRI_O['NAME']:
-            return (
-"""
-[[registry]]
-prefix = "docker.io"
-insecure = false
-blocked = false
-location = "docker.io"
-[[registry.mirror]]
-location = "registry-1.docker.io"
-insecure = false
-"""
-            ).lstrip()
 
 def _build_registry_directory(runtime: dict):
     base_path = HOST_PATH + runtime['REGISTRY_BASE_PATH']
@@ -151,7 +138,6 @@ These files are parsed by {runtime['NAME']}, which then refer to right services 
         _write_file_with_log(base_path + "/docker.io", "hosts.toml", _hosts_toml_docker_io(runtime['NAME']))
     elif runtime['NAME'] == CRI_O['NAME']:
         _write_file_with_log(base_path, "quay.conf", _hosts_toml_quay_io(runtime['NAME']))
-        _write_file_with_log(base_path, "docker.conf", _hosts_toml_docker_io(runtime['NAME']))
 
     _log(f"Successfully created host directory at: {base_path}")
 
