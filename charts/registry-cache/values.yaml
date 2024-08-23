@@ -11,6 +11,7 @@ registryCache:
   containerdRegistryBasePath: null # /etc/k0s/vessl_containerd_hosts
 
   restartContainerdInDaemonset: true
+  restartCrioInDaemonset: false
   untaint:
     enabled: false
     serviceAccount: registry-cache-untaint
