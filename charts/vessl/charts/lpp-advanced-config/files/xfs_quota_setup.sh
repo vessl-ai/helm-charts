@@ -12,8 +12,6 @@ _create_dir() {
 
 _setup_xfs_quota() {
     /bin/echo -e "\033[1;32mCreating project...\033[0m (ID: ${PROJ_ID}, name: ${PROJ_NAME})"
-    /bin/echo "${PROJ_ID}:${VOL_DIR}" >> /etc/projects
-    /bin/echo "${PROJ_NAME}:${PROJ_ID}" >> /etc/projid
 
     if [ -z "${XFS_QUOTA_SIZE}" ]
     then
@@ -23,10 +21,16 @@ _setup_xfs_quota() {
         XFS_QUOTA_SIZE=10g
     fi
 
-    /bin/echo -e "\033[1;32mRunning xfs_quota commands...\033[0m"
-    xfs_quota -x -c "project -s ${PROJ_NAME}"
-    xfs_quota -x -c "limit -p bhard=${XFS_QUOTA_SIZE} ${PROJ_NAME}" "${XFS_NAME}"
-    xfs_quota -x -c "report -pbih" "${XFS_NAME}"
+    {
+        flock -w 30 200
+        /bin/echo "${PROJ_ID}:${VOL_DIR}" >> /etc/projects
+        /bin/echo "${PROJ_NAME}:${PROJ_ID}" >> /etc/projid
+
+        /bin/echo -e "\033[1;32mRunning xfs_quota commands...\033[0m"
+        xfs_quota -x -c "project -s ${PROJ_NAME}"
+        xfs_quota -x -c "limit -p bhard=${XFS_QUOTA_SIZE} ${PROJ_NAME}" "${XFS_NAME}"
+        xfs_quota -x -c "report -pbih" "${XFS_NAME}"
+    } 200>/opt/vessl/xfs-quota-lock/flock.lock
 }
 
 ##################
