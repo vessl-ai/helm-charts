@@ -69,6 +69,6 @@ data:
     spec:
       containers:
         - name: helper-pod
-          image: rancher/local-path-provisioner:v0.0.24
+          image: quay.io/vessl-ai/busybox:21.10
           imagePullPolicy: IfNotPresent
 {{- end }}
