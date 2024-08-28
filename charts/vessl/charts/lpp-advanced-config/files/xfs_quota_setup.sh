@@ -5,12 +5,6 @@ PROJ_NAME=$(basename "$VOL_DIR")
 PROJ_ID=$(od -An -N4 -t u4 < /dev/urandom | tr -d ' ')
 XFS_NAME=$(dirname "$VOL_DIR")
 
-_install_xfsprogs() {
-    /bin/echo -e "\033[1;32mInstalling xfsprogs...\033[0m"
-    apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs
-}
-
 _create_dir() {
     /bin/echo -e "\033[1;32mCreating directory\033[0m: ${VOL_DIR}"
     mkdir -m 0777 -p "$VOL_DIR"
@@ -39,7 +33,6 @@ _setup_xfs_quota() {
 # MAIN STARTS HERE
 ##################
 
-_install_xfsprogs
 _create_dir
 _setup_xfs_quota
 
