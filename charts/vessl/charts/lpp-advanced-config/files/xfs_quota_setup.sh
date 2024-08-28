@@ -22,7 +22,7 @@ _setup_xfs_quota() {
     fi
 
     {
-        flock -w 30 200
+        flock -w 30 9
         /bin/echo "${PROJ_ID}:${VOL_DIR}" >> /etc/projects
         /bin/echo "${PROJ_NAME}:${PROJ_ID}" >> /etc/projid
 
@@ -30,7 +30,7 @@ _setup_xfs_quota() {
         xfs_quota -x -c "project -s ${PROJ_NAME}"
         xfs_quota -x -c "limit -p bhard=${XFS_QUOTA_SIZE} ${PROJ_NAME}" "${XFS_NAME}"
         xfs_quota -x -c "report -pbih" "${XFS_NAME}"
-    } 200>/opt/vessl/xfs-quota-lock
+    } 9>/opt/vessl/xfs-quota-lock
 }
 
 ##################

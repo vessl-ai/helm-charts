@@ -6,7 +6,7 @@ XFS_NAME=$(dirname "$VOL_DIR")
 
 _remove_xfs_quota() {
     {
-        flock -w 30 200
+        flock -w 30 9
 
         /bin/echo -e "\033[1;32mRunning xfs_quota commands...\033[0m"
         xfs_quota -x -c "limit -p bhard=0 ${PROJ_NAME}" "${XFS_NAME}"
@@ -15,7 +15,7 @@ _remove_xfs_quota() {
         /bin/echo -e "\033[1;32mRemoving project...\033[0m (name: ${PROJ_NAME})"
         /bin/echo "$(sed "/${PROJ_NAME}/d" /etc/projects)" > /etc/projects
         /bin/echo "$(sed "/${PROJ_NAME}/d" /etc/projid)" > /etc/projid
-    } 200>/opt/vessl/xfs-quota-lock
+    } 9>/opt/vessl/xfs-quota-lock
 }
 
 _remove_dir() {
