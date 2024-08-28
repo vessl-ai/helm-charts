@@ -39,8 +39,6 @@ _setup_xfs_quota() {
 # MAIN STARTS HERE
 ##################
 
-env
-
 _install_xfsprogs
 _create_dir
 _setup_xfs_quota
