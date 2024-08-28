@@ -8,3 +8,4 @@ path:
 
 xfs_quota:
   enabled: false
+  size: 10g

@@ -387,6 +387,7 @@ lpp-advanced-config:
   enabled: false
   xfs_quota:
     enabled: true
+    size: 10g
 
 # https://github.com/longhorn/longhorn/tree/master/chart
 longhorn:

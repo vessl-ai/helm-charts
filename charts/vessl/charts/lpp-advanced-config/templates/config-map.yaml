@@ -48,6 +48,9 @@ data:
             mountPath: /etc/projid
           - name: device-dir
             mountPath: /dev
+          env:
+            - name: XFS_QUOTA_SIZE
+              value: {{ .Values.xfs_quota.size | toString | toYaml }}
       volumes:
       - name: xfs-quota-projects
         hostPath:
