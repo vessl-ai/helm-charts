@@ -4,14 +4,31 @@ metadata:
   namespace: {{ .Release.Namespace }}
   name: {{ .Values.config_map_name }}
 data:
+
   config.json: |-
     {{- include "lpp_advanced_config.config_json_content" . | fromYaml | toPrettyJson | nindent 4 }}
-{{- with .Values.xfs_quota }}
-{{- if .enabled }}
+
+{{- if .Values.xfs_quota.enabled }}
   setup: |-
-    {{- $.Files.Get "files/setup.sh" | nindent 4 }}
+    {{- $.Files.Get "files/xfs_quota_setup.sh" | nindent 4 }}
+{{- else }}
+  setup: |-
+    #!/bin/sh
+    set -eu
+    mkdir -m 0777 -p "$VOL_DIR"
+{{- end }}
+
+{{- if .Values.xfs_quota.enabled }}
   teardown: |-
-    {{- $.Files.Get "files/teardown.sh" | nindent 4 }}
+    {{- $.Files.Get "files/xfs_quota_teardown.sh" | nindent 4 }}
+{{- else }}
+  teardown: |-
+    #!/bin/sh
+    set -eu
+    rm -rf "$VOL_DIR"
+{{- end }}
+
+{{- if .Values.xfs_quota.enabled }}
   helperPod.yaml: |-
     apiVersion: v1
     kind: Pod
@@ -43,5 +60,15 @@ data:
       - name: device-dir
         hostPath:
           path: /dev
-{{- end }}
+{{- else }}
+  helperPod.yaml: |-
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: helper-pod
+    spec:
+      containers:
+        - name: helper-pod
+          image: rancher/local-path-provisioner:v0.0.24
+          imagePullPolicy: IfNotPresent
 {{- end }}

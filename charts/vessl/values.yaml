@@ -383,6 +383,11 @@ local-path-provisioner:
                 operator: "In"
                 values: ["manager"]
 
+lpp-advanced-config:
+  enabled: false
+  xfs_quota:
+    enabled: true
+
 # https://github.com/longhorn/longhorn/tree/master/chart
 longhorn:
   enabled: false
