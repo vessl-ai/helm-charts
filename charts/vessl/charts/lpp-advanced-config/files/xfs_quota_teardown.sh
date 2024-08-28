@@ -15,7 +15,7 @@ _remove_xfs_quota() {
         /bin/echo -e "\033[1;32mRemoving project...\033[0m (name: ${PROJ_NAME})"
         /bin/echo "$(sed "/${PROJ_NAME}/d" /etc/projects)" > /etc/projects
         /bin/echo "$(sed "/${PROJ_NAME}/d" /etc/projid)" > /etc/projid
-    } 200>/opt/vessl/xfs-quota-lock/flock.lock
+    } 200>/opt/vessl/xfs-quota-lock
 }
 
 _remove_dir() {
