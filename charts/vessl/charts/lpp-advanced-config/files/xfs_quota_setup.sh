@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -e
 
 PROJ_NAME=$(basename "$VOL_DIR")
 PROJ_ID=$(od -An -N4 -t u4 < /dev/urandom | tr -d ' ')
@@ -21,7 +21,7 @@ _setup_xfs_quota() {
     /bin/echo "${PROJ_ID}:${VOL_DIR}" >> /etc/projects
     /bin/echo "${PROJ_NAME}:${PROJ_ID}" >> /etc/projid
 
-    if ! [[ -v "XFS_QUOTA_SIZE" ]]
+    if [ -z "${XFS_QUOTA_SIZE}" ]
     then
         /bin/echo -e "\033[1;31mThe shell variable 'XFS_QUOTA_SIZE' is not set!\033[0m"
         /bin/echo -e "It is likely that something is wrong with the chart configuration."

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -eu
 
 PROJ_NAME=$(basename "$VOL_DIR")
@@ -12,8 +12,8 @@ _install_xfsprogs() {
 
 _remove_xfs_quota() {
     /bin/echo -e "\033[1;32mRunning xfs_quota commands...\033[0m"
-    xfs_quota -x -c "limit -p bhard=0 ${PROJ_NAME}" ${XFS_NAME}
-    xfs_quota -x -c "report -pbih" ${XFS_NAME}
+    xfs_quota -x -c "limit -p bhard=0 ${PROJ_NAME}" "${XFS_NAME}"
+    xfs_quota -x -c "report -pbih" "${XFS_NAME}"
 
     /bin/echo -e "\033[1;32mRemoving project...\033[0m (name: ${PROJ_NAME})"
     /bin/echo "$(sed "/${PROJ_NAME}/d" /etc/projects)" > /etc/projects
