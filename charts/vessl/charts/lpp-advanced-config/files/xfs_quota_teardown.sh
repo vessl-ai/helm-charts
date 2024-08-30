@@ -31,4 +31,3 @@ _remove_xfs_quota
 _remove_dir
 
 /bin/echo -e "\033[1;32mTeardown complete!\033[0m"
-sleep 10 # TODO: remove me

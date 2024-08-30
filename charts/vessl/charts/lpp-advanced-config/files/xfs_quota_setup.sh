@@ -41,4 +41,3 @@ _create_dir
 _setup_xfs_quota
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"
-sleep 10 # TODO: remove me
