@@ -7,5 +7,5 @@ path:
   #    path: /mnt/data
 
 xfs_quota:
-  enabled: false
+  enabled: true
   size: 10g
