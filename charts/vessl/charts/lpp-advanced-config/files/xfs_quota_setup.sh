@@ -21,6 +21,14 @@ _setup_xfs_quota() {
         XFS_QUOTA_SIZE=10g
     fi
 
+    if ! echo "${XFS_QUOTA_SIZE}" | grep -q -E '^[1-9][0-9]*[kmg]?$'
+    then
+        /bin/echo -e "\033[1;31mThe shell variable 'XFS_QUOTA_SIZE' is invalid!\033[0m"
+        /bin/echo -e "It should contain an integer, optionally followed by suffixes: k, m, g."
+        /bin/echo -e "Ignoring its current value '${XFS_QUOTA_SIZE}', and defaulting to 10 GB."
+        XFS_QUOTA_SIZE=10g
+    fi
+
     {
         flock -w 30 9
         /bin/echo "${PROJ_ID}:${VOL_DIR}" >> /etc/projects
