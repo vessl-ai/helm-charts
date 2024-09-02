@@ -10,9 +10,8 @@ _create_dir() {
     mkdir -m 0777 -p "$VOL_DIR"
 }
 
-_setup_xfs_quota() {
-    /bin/echo -e "\033[1;32mCreating project...\033[0m (ID: ${PROJ_ID}, name: ${PROJ_NAME})"
-
+_check_variables() {
+    /bin/echo -e "\033[1;32mChecking env vars...\033[0m (ID: ${PROJ_ID}, name: ${PROJ_NAME})"
     if [ -z "${XFS_QUOTA_SIZE}" ]
     then
         /bin/echo -e "\033[1;31mThe shell variable 'XFS_QUOTA_SIZE' is not set!\033[0m"
@@ -28,6 +27,10 @@ _setup_xfs_quota() {
         /bin/echo -e "Ignoring its current value '${XFS_QUOTA_SIZE}', and defaulting to 10 GB."
         XFS_QUOTA_SIZE=10g
     fi
+}
+
+_setup_xfs_quota() {
+    /bin/echo -e "\033[1;32mCreating project...\033[0m (ID: ${PROJ_ID}, name: ${PROJ_NAME})"
 
     {
         flock -w 30 9
@@ -46,6 +49,7 @@ _setup_xfs_quota() {
 ##################
 
 _create_dir
+_check_variables
 _setup_xfs_quota
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"
