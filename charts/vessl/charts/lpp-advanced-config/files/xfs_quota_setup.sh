@@ -11,7 +11,7 @@ _create_dir() {
 }
 
 _check_variables() {
-    /bin/echo -e "\033[1;32mChecking env vars...\033[0m (ID: ${PROJ_ID}, name: ${PROJ_NAME})"
+    /bin/echo -e "\033[1;32mChecking env vars...\033[0m"
     if [ -z "${XFS_QUOTA_SIZE}" ]
     then
         /bin/echo -e "\033[1;31mThe shell variable 'XFS_QUOTA_SIZE' is not set!\033[0m"
