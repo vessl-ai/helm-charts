@@ -1,0 +1,5 @@
+This document lays out the changes made by VESSL AI, Inc.
+
+2024-08-23: Added the option: 'configmap.create'. This option is backwards-compatible.
+
+2023-08-03: Cloned the chart at version v0.0.24.

@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ .Values.config_map_name }}
+data:
+  config.json: |-
+    {{- include "lpp_advanced_config.config_json_content" . | fromYaml | toPrettyJson | nindent 4 }}
+
+{{- if .Values.xfs_quota.enabled }}
+  setup: |-
+    {{- $.Files.Get "files/xfs_quota_setup.sh" | nindent 4 }}
+
+  teardown: |-
+    {{- $.Files.Get "files/xfs_quota_teardown.sh" | nindent 4 }}
+
+  helperPod.yaml: |-
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: helper-pod
+    spec:
+      containers:
+        - name: helper-pod
+          image: quay.io/vessl-ai/lpp-helper:v0.0.1
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          volumeMounts:
+          - name: xfs-quota-projects
+            mountPath: /etc/projects
+          - name: xfs-quota-projid
+            mountPath: /etc/projid
+          - name: xfs-quota-lock
+            mountPath: /opt/vessl/xfs-quota-lock
+          - name: device-dir
+            mountPath: /dev
+          env:
+            - name: XFS_QUOTA_SIZE
+              value: {{ .Values.xfs_quota.size | toString | toYaml }}
+      volumes:
+      - name: xfs-quota-projects
+        hostPath:
+          path: /etc/projects
+          type: FileOrCreate
+      - name: xfs-quota-projid
+        hostPath:
+          path: /etc/projid
+          type: FileOrCreate
+      - name: xfs-quota-lock
+        hostPath:
+          path: /opt/vessl/xfs-quota-lock
+          type: FileOrCreate
+      - name: device-dir
+        hostPath:
+          path: /dev
+
+{{- else }}
+  setup: |-
+    #!/bin/sh
+    set -eu
+    mkdir -m 0777 -p "$VOL_DIR"
+
+  teardown: |-
+    #!/bin/sh
+    set -eu
+    rm -rf "$VOL_DIR"
+
+  helperPod.yaml: |-
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: helper-pod
+    spec:
+      containers:
+        - name: helper-pod
+          image: quay.io/vessl-ai/busybox:21.10
+          imagePullPolicy: IfNotPresent
+{{- end }}

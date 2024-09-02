@@ -1,0 +1,6 @@
+apiVersion: v2
+name: lpp-advanced-config
+description: Advanced config management for local-path-provisioner
+type: application
+version: 0.1.0
+appVersion: 0.1.0
