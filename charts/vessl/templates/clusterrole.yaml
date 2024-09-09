@@ -11,6 +11,6 @@ rules:
     {{- if eq .Values.agent.scope "cluster" }}
     resources: ["*"]
     {{- else }}
-    resources: ["nodes"]
+    resources: ["nodes", "persistentvolumes"]
     {{- end }}
     verbs: ["*"]
