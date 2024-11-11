@@ -9,8 +9,11 @@ agent:
   image: "quay.io/vessl-ai/cluster-agent:0.6.24"
   sentryDsn: https://0481c31171114c109ac911ac947f0518@o386227.ingest.sentry.io/5585090
   scope: cluster # cluster, namespace
-  containerRuntime: containerd # containerd, docker
+  containerRuntime: containerd # containerd, docker, crio
+  clusterServiceType: Ingress # Ingress, LoadBalancer, NodePort
+  region: "" # on-premise, <CLOUD_REGION>
   ingressEndpoint: # To be deprecated
+
   nodeSelector: {}
   tolerations:
     - key: "node-role.kubernetes.io/master"
