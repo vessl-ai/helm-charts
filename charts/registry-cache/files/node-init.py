@@ -221,7 +221,7 @@ def _remove_node_taint():
     _log(f"Successfully read node {node_name} from Kubernetes API.")
 
     spec: V1NodeSpec = node.spec # type: ignore
-    taints: List[V1Taint] = spec.taints # type: ignore
+    taints: List[V1Taint] = spec.taints or [] # type: ignore
 
     for i, taint in enumerate(taints):
         key: str = taint.key # type: ignore
