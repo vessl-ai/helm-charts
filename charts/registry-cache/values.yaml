@@ -54,19 +54,21 @@ harbor:
           size: 1Gi
           annotations: {}
       database:
-        existingClaim: ""
-        storageClass: ""
-        subPath: ""
-        accessMode: ReadWriteOnce
-        size: 1Gi
-        annotations: {}
+        internal:
+          existingClaim: ""
+          storageClass: ""
+          subPath: ""
+          accessMode: ReadWriteOnce
+          size: 1Gi
+          annotations: {}
       redis:
-        existingClaim: ""
-        storageClass: ""
-        subPath: ""
-        accessMode: ReadWriteOnce
-        size: 1Gi
-        annotations: {}
+        internal:
+          existingClaim: ""
+          storageClass: ""
+          subPath: ""
+          accessMode: ReadWriteOnce
+          size: 1Gi
+          annotations: {}
 
     # Define which storage backend is used for registry to store
     # images and charts. Refer to
