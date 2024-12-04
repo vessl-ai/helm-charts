@@ -174,11 +174,12 @@ These files are parsed by containerd, which then refer to right services when pu
 
         return (
             f"""
-    server = "https://quay.io"
-    [host."{quay_mirror_url}"]
-      capabilities = ["pull", "resolve"]
-      override_path = true
-    """
+server = "https://quay.io"
+
+[host."{quay_mirror_url}"]
+capabilities = ["pull", "resolve"]
+override_path = true
+"""
         ).lstrip()
 
     @classmethod
@@ -191,18 +192,18 @@ These files are parsed by containerd, which then refer to right services when pu
 server = "https://docker.io"
 
 [host."https://mirror.gcr.io"]
-    capabilities = ["pull", "resolve"]
+capabilities = ["pull", "resolve"]
 
 [host."https://registry-1.docker.io"]
-    capabilities = ["pull", "resolve"]
+capabilities = ["pull", "resolve"]
 """.lstrip()
         else:
             return """
 server = "https://docker.io"
 
 [host."https://registry-1.docker.io"]
-    capabilities = ["pull", "resolve"]
-"""
+capabilities = ["pull", "resolve"]
+""".lstrip()
 
     @classmethod
     def _patch_containerd_config(cls) -> None:

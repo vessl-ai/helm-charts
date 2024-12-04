@@ -10,6 +10,12 @@ registryCache:
   containerdConfigPath: null # /etc/k0s/containerd.toml
   containerdRegistryBasePath: null # /etc/k0s/vessl_containerd_hosts
 
+  daemonsetNodeSelector: null
+  # Example:
+  # daemonsetNodeSelector:
+  #   v1.k8s.vessl.ai/my-key-1: my-value-1
+  #   v1.k8s.vessl.ai/my-key-2: my-value-2
+
   restartContainerdInDaemonset: true
   restartCrioInDaemonset: false
   untaint:

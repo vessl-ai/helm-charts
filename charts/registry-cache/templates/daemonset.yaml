@@ -25,6 +25,10 @@ spec:
               - matchExpressions:
                   - key: v1.k8s.vessl.ai/dedicated
                     operator: DoesNotExist
+      {{- with .Values.registryCache.daemonsetNodeSelector }}
+      nodeSelector:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
       tolerations:
         - effect: NoSchedule
           key: nvidia.com/gpu
