@@ -209,6 +209,72 @@ entries:
   vessl:
   - apiVersion: v2
     appVersion: 0.6.24
+    created: "2025-01-09T11:18:22.011258096Z"
+    dependencies:
+    - alias: nfd
+      condition: nfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.15.4
+    - alias: gfd
+      condition: gfd.enabled
+      name: gpu-feature-discovery
+      repository: https://nvidia.github.io/gpu-feature-discovery
+      version: 0.8.2
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.19.0
+    - alias: node-exporter
+      condition: node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.33.0
+    - condition: dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 3.4.1
+    - condition: nvidia-device-plugin.enabled
+      name: nvidia-device-plugin
+      repository: https://nvidia.github.io/k8s-device-plugin
+      version: 0.15.0
+    - alias: prometheus-remote-write
+      condition: prometheus-remote-write.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 23.2.0
+    - condition: longhorn.enabled
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: 1.5.1
+    - condition: local-path-provisioner.enabled
+      name: local-path-provisioner
+      repository: ""
+      version: 0.0.24
+    - condition: harbor.enabled
+      name: harbor
+      repository: ""
+      version: 1.0.1
+    - condition: prometheus-adapter.enabled
+      name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.9.0
+    - condition: image-prepull.enabled
+      name: image-prepull
+      repository: ""
+      version: 0.1.0
+    - condition: lpp-advanced-config.enabled
+      name: lpp-advanced-config
+      repository: ""
+      version: 0.1.0
+    digest: e59b2833b457f74bfbcb693069cc23e21040f430795bd5921699449bedc0035a
+    name: vessl
+    type: application
+    urls:
+    - https://github.com/vessl-ai/helm-charts/releases/download/vessl-0.0.44/vessl-0.0.44.tgz
+    version: 0.0.44
+  - apiVersion: v2
+    appVersion: 0.6.24
     created: "2025-01-09T05:13:56.311174682Z"
     dependencies:
     - alias: nfd
@@ -2287,4 +2353,4 @@ entries:
     urls:
     - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.3.tgz
     version: 0.0.3
-generated: "2025-01-09T05:13:56.311526247Z"
+generated: "2025-01-09T11:18:22.011651027Z"
