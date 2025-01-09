@@ -14,4 +14,3 @@ rules:
     resources: ["nodes", "persistentvolumes", "ingressclasses"]
     {{- end }}
     verbs: ["*"]
-1
