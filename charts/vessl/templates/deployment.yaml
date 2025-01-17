@@ -63,7 +63,7 @@ spec:
             - name: VESSL_PROVIDER_TYPE
               value: "{{ .Values.agent.providerType }}"
             - name: VESSL_SHARED_NAMESPACE
-              value: "{{ .Values.agent.sharedNamespace }}"
+              value: "{{ .Release.Namespace }}"
           volumeMounts:
             - name: access-token
               readOnly: true
