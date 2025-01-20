@@ -2,7 +2,6 @@ agent:
   accessToken: # required
   clusterName:
   providerType: on-premise # on-premise, aws, gcp, oci, azure
-  sharedNamespace: vessl-infra # required
   imagePullPolicy:
   apiServer: https://api.vessl.ai
   logLevel: info
