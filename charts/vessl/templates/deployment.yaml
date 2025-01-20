@@ -62,7 +62,7 @@ spec:
               value: "{{ .Values.agent.containerRuntime }}"
             - name: VESSL_PROVIDER_TYPE
               value: "{{ .Values.agent.providerType }}"
-            - name: VESSL_SHARED_NAMESPACE
+            - name: VESSL_CLUSTER_AGENT_NAMESPACE
               value: "{{ .Release.Namespace }}"
           volumeMounts:
             - name: access-token
