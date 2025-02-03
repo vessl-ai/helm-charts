@@ -56,3 +56,7 @@ dependencies:
 - name: lpp-advanced-config
   version: "0.1.0"
   condition: lpp-advanced-config.enabled
+- name: nginx-ingress
+  version: "2.0.0"
+  condition: vessl-nginx.enabled
+  repository: https://helm.nginx.com/stable
