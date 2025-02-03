@@ -398,6 +398,19 @@ local-path-provisioner:
   configmap:
     create: true
 
+vessl-nginx:
+  enabled: true
+  controller:
+    ingressClass:
+      name: "vessl-nginx"
+    service:
+      # This will create nodePort service on cluster biding port 80 and 443.
+      # Set this to false if cluster already has other ingress controller, such as ingress-nginx
+      create: false
+    # enableSnippets must be true to run VESSL service in nodeport mode
+    enableSnippets: true
+
+
 lpp-advanced-config:
   enabled: false
   xfs_quota:
