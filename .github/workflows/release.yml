@@ -50,6 +50,7 @@ jobs:
           helm repo add longhorn https://charts.longhorn.io
           helm repo add zot https://zotregistry.dev/helm-charts
           helm repo add harbor https://helm.goharbor.io
+          helm repo add nginx-ingress https://helm.nginx.com/stable
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
         env:
