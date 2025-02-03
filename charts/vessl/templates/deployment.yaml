@@ -62,6 +62,8 @@ spec:
               value: "{{ .Values.agent.containerRuntime }}"
             - name: VESSL_PROVIDER_TYPE
               value: "{{ .Values.agent.providerType }}"
+            - name: VESSL_NGINX_ENABLED
+              value: "{{ .Values.agent.nginxEnabled }}"
           volumeMounts:
             - name: access-token
               readOnly: true

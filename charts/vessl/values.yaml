@@ -2,6 +2,7 @@ agent:
   accessToken: # required
   clusterName:
   providerType: on-premise # on-premise, aws, gcp, oci, azure
+  nginxEnabled: true
   imagePullPolicy:
   apiServer: https://api.vessl.ai
   logLevel: info
