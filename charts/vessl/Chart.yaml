@@ -1,7 +1,7 @@
 apiVersion: v2
 name: vessl
 type: application
-version: 0.0.47
+version: 0.0.48
 appVersion: "0.6.24"
 dependencies:
 - name: node-feature-discovery
@@ -58,5 +58,5 @@ dependencies:
   condition: lpp-advanced-config.enabled
 - name: nginx-ingress
   version: "2.0.0"
-  condition: vessl-nginx.enabled
+  condition: nginx-ingress.enabled
   repository: https://helm.nginx.com/stable
