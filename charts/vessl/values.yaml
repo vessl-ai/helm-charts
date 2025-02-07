@@ -12,7 +12,6 @@ agent:
   containerRuntime: containerd # containerd, docker, crio
   clusterServiceType: Ingress # Ingress, LoadBalancer, NodePort
   region: "" # on-premise, <CLOUD_REGION>
-  ingressEndpoint: # To be deprecated
   gpuPools: [] # this property is only used for the oci providerType
 #    - name: "a10-test"
 #      cpuLimit: 1
