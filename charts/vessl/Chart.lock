@@ -38,5 +38,8 @@ dependencies:
 - name: lpp-advanced-config
   repository: ""
   version: 0.1.0
-digest: sha256:ca1babb6fd114a64c3457c11e1476e412ba83d324278b3ad884289665405bb01
-generated: "2024-08-28T13:35:13.358109+09:00"
+- name: nginx-ingress
+  repository: https://helm.nginx.com/stable
+  version: 2.0.0
+digest: sha256:05e8efc94d61f7e449ef3667deba83a9830668ad2a7cad6e7d1db7be0128838f
+generated: "2025-02-03T19:13:22.953634+09:00"

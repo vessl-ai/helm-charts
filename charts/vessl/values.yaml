@@ -2,6 +2,7 @@ agent:
   accessToken: # required
   clusterName:
   providerType: on-premise # on-premise, aws, gcp, oci, azure
+  nginxEnabled: true
   imagePullPolicy:
   apiServer: https://api.vessl.ai
   logLevel: info
@@ -396,6 +397,19 @@ local-path-provisioner:
                 values: ["manager"]
   configmap:
     create: true
+
+vessl-nginx:
+  enabled: true
+  controller:
+    ingressClass:
+      name: "vessl-nginx"
+    service:
+      # This will create nodePort service on cluster biding port 80 and 443.
+      # Set this to false if cluster already has other ingress controller, such as ingress-nginx
+      create: false
+    # enableSnippets must be true to run VESSL service in nodeport mode
+    enableSnippets: true
+
 
 lpp-advanced-config:
   enabled: false
