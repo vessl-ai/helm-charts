@@ -1,5 +1,5 @@
 agent:
-  accessToken: sd # required
+  accessToken: # required
   clusterName:
   providerType: on-premise # on-premise, aws, gcp, oci, azure
   imagePullPolicy:
