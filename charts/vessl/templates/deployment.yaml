@@ -62,7 +62,7 @@ spec:
               value: "{{ .Values.agent.containerRuntime }}"
             - name: VESSL_PROVIDER_TYPE
               value: "{{ .Values.agent.providerType }}"
-            - name: USE_VIRTUAL_SERVER
+            - name: VESSL_USE_VIRTUAL_SERVER
               value: "{{ index .Values "nginx-ingress" "enabled" }}"
           volumeMounts:
             - name: access-token
