@@ -209,6 +209,71 @@ entries:
   vessl:
   - apiVersion: v2
     appVersion: 0.6.24
+    created: "2025-02-24T00:25:30.575320144Z"
+    dependencies:
+    - alias: nfd
+      condition: nfd.enabled
+      name: node-feature-discovery
+      repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+      version: 0.17.1
+    - condition: kube-state-metrics.enabled
+      name: kube-state-metrics
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 5.30.0
+    - alias: node-exporter
+      condition: node-exporter.enabled
+      name: prometheus-node-exporter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.44.0
+    - condition: dcgm-exporter.enabled
+      name: dcgm-exporter
+      repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+      version: 4.0.3
+    - condition: nvidia-device-plugin.enabled
+      name: nvidia-device-plugin
+      repository: https://nvidia.github.io/k8s-device-plugin
+      version: 0.17.0
+    - alias: prometheus-remote-write
+      condition: prometheus-remote-write.enabled
+      name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 23.2.0
+    - condition: longhorn.enabled
+      name: longhorn
+      repository: https://charts.longhorn.io
+      version: 1.5.1
+    - condition: local-path-provisioner.enabled
+      name: local-path-provisioner
+      repository: ""
+      version: 0.0.24
+    - condition: harbor.enabled
+      name: harbor
+      repository: ""
+      version: 1.0.1
+    - condition: prometheus-adapter.enabled
+      name: prometheus-adapter
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 4.9.0
+    - condition: image-prepull.enabled
+      name: image-prepull
+      repository: ""
+      version: 0.1.0
+    - condition: lpp-advanced-config.enabled
+      name: lpp-advanced-config
+      repository: ""
+      version: 0.1.0
+    - condition: nginx-ingress.enabled
+      name: nginx-ingress
+      repository: https://helm.nginx.com/stable
+      version: 2.0.0
+    digest: 50fd42c77428a0c757ada1b8f444d4cb3192e4ae9885ac1f2cc1d0acddbdc7e9
+    name: vessl
+    type: application
+    urls:
+    - https://github.com/vessl-ai/helm-charts/releases/download/vessl-0.0.49/vessl-0.0.49.tgz
+    version: 0.0.49
+  - apiVersion: v2
+    appVersion: 0.6.24
     created: "2025-02-07T14:56:49.46405304Z"
     dependencies:
     - alias: nfd
@@ -2625,4 +2690,4 @@ entries:
     urls:
     - https://vessl-helm-packages.s3.ap-northeast-2.amazonaws.com/vessl/vessl-0.0.3.tgz
     version: 0.0.3
-generated: "2025-02-07T14:56:49.464372689Z"
+generated: "2025-02-24T00:25:30.575747493Z"
