@@ -1,34 +1,29 @@
 apiVersion: v2
 name: vessl
 type: application
-version: 0.0.48
+version: 0.0.49
 appVersion: "0.6.24"
 dependencies:
 - name: node-feature-discovery
-  version: "0.15.4"
+  version: "0.17.1"
   alias: nfd
   condition: nfd.enabled
   repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
-- name: gpu-feature-discovery
-  version: "0.8.2"
-  alias: gfd
-  condition: gfd.enabled
-  repository: https://nvidia.github.io/gpu-feature-discovery
 - name: kube-state-metrics
-  version: "5.19.0"
+  version: "5.30.0"
   condition: kube-state-metrics.enabled
   repository: https://prometheus-community.github.io/helm-charts
 - name: prometheus-node-exporter
   alias: node-exporter
-  version: "4.33.0"
+  version: "4.44.0"
   condition: node-exporter.enabled
   repository: https://prometheus-community.github.io/helm-charts
 - name: dcgm-exporter
-  version: "3.4.1"
+  version: "4.0.3"
   condition: dcgm-exporter.enabled
   repository: https://nvidia.github.io/dcgm-exporter/helm-charts
 - name: nvidia-device-plugin
-  version: "0.15.0"
+  version: "0.17.0"
   condition: nvidia-device-plugin.enabled
   repository: https://nvidia.github.io/k8s-device-plugin
 - name: prometheus

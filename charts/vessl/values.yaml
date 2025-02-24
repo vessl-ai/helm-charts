@@ -82,6 +82,8 @@ nvidia-device-plugin:
                 operator: In
                 values:
                   - "true"
+  gfd:
+    enabled: true
 
 # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
 nfd:
@@ -127,15 +129,6 @@ nfd:
             - "0302"
           deviceLabelFields:
             - "vendor"
-
-# https://github.com/NVIDIA/gpu-feature-discovery/tree/main/deployments/helm/gpu-feature-discovery
-gfd:
-  enabled: true
-  tolerations:
-    - operator: "Exists"
-      effect: "NoSchedule"
-  nfd:
-    enabled: false
 
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
 kube-state-metrics:
