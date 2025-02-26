@@ -85,8 +85,52 @@ nvidia-device-plugin:
   gfd:
     enabled: true
   nfd:
-    enabled: true
-    version: "0.17.1"
+    enabled: false
+
+# https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
+nfd:
+  enabled: true
+  master:
+    tolerations:
+      - operator: "Exists"
+        effect: "NoSchedule"
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/master"
+                  operator: "In"
+                  values: [""]
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/control-plane"
+                  operator: "Exists"
+          - weight: 2
+            preference:
+              matchExpressions:
+                - key: "v1.k8s.vessl.ai/dedicated"
+                  operator: "In"
+                  values: ["manager"]
+    config:
+      extraLabelNs: ["nvidia.com"]
+  worker:
+    tolerations:
+      - operator: "Exists"
+        effect: "NoSchedule"
+    config:
+      sources:
+        pci:
+          deviceClassWhitelist:
+            - "02"
+            - "0200"
+            - "0207"
+            - "0300"
+            - "0302"
+          deviceLabelFields:
+            - "vendor"
 
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
 kube-state-metrics:
