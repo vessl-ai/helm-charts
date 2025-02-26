@@ -84,6 +84,8 @@ nvidia-device-plugin:
                   - "true"
   gfd:
     enabled: true
+  nfd:
+    enabled: false
 
 # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
 nfd:
