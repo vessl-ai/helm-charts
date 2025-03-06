@@ -395,6 +395,8 @@ local-path-provisioner:
 nginx-ingress:
   enabled: false
   controller:
+    image:
+      tag: 4.0.1-alpine
     ingressClass:
       name: vessl-nginx
     service:

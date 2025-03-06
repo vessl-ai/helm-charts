@@ -1,7 +1,7 @@
 dependencies:
 - name: node-feature-discovery
   repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
-  version: 0.17.1
+  version: 0.17.2
 - name: kube-state-metrics
   repository: https://prometheus-community.github.io/helm-charts
   version: 5.30.0
@@ -10,7 +10,7 @@ dependencies:
   version: 4.44.0
 - name: dcgm-exporter
   repository: https://nvidia.github.io/dcgm-exporter/helm-charts
-  version: 4.0.3
+  version: 4.0.4
 - name: nvidia-device-plugin
   repository: https://nvidia.github.io/k8s-device-plugin
   version: 0.17.0
@@ -38,5 +38,5 @@ dependencies:
 - name: nginx-ingress
   repository: https://helm.nginx.com/stable
   version: 2.0.1
-digest: sha256:b0447f10a2ee0f01677fd0fbb09468f7b4c803caa1f0256ff2260817ee0b1b52
-generated: "2025-02-25T17:49:35.993014+09:00"
+digest: sha256:622816f0fc0ce258c42011f8924251c0d80a18b2eecba0e7b48265ee2bd542e9
+generated: "2025-03-06T15:25:48.729023+09:00"
