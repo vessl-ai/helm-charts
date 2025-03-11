@@ -392,6 +392,7 @@ local-path-provisioner:
   configmap:
     create: true
 
+# https://github.com/nginx/kubernetes-ingress/blob/main/charts/nginx-ingress
 nginx-ingress:
   enabled: false
   controller:
@@ -402,7 +403,26 @@ nginx-ingress:
     service:
       create: false
     enableSnippets: true
-
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/master"
+                  operator: "In"
+                  values: [""]
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/control-plane"
+                  operator: "Exists"
+          - weight: 2
+            preference:
+              matchExpressions:
+                - key: "v1.k8s.vessl.ai/dedicated"
+                  operator: "In"
+                  values: ["manager"]
 
 lpp-advanced-config:
   enabled: false
