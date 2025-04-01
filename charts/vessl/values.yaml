@@ -6,12 +6,12 @@ agent:
   apiServer: https://api.vessl.ai
   logLevel: info
   env: prod
-  image: "quay.io/vessl-ai/cluster-agent:0.6.30-rc1"
+  image: "quay.io/vessl-ai/cluster-agent:0.6.30-rc2"
   sentryDsn: https://0481c31171114c109ac911ac947f0518@o386227.ingest.sentry.io/5585090
   scope: cluster # cluster, namespace
   containerRuntime: containerd # containerd, docker, crio
   clusterServiceType: Ingress # Ingress, LoadBalancer, NodePort
-  allowInsecureTLS: false
+  insecureSkipTLSVerify: false
   region: "" # on-premise, <CLOUD_REGION>
   gpuPools: [] # this property is only used for the oci providerType
 #    - name: "a10-test"
