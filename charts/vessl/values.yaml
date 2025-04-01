@@ -11,7 +11,7 @@ agent:
   scope: cluster # cluster, namespace
   containerRuntime: containerd # containerd, docker, crio
   clusterServiceType: Ingress # Ingress, LoadBalancer, NodePort
-  allowInsecureTLS: false
+  insecureSkipTLSVerify: false
   region: "" # on-premise, <CLOUD_REGION>
   gpuPools: [] # this property is only used for the oci providerType
 #    - name: "a10-test"

@@ -64,8 +64,8 @@ spec:
               value: "{{ .Values.agent.providerType }}"
             - name: VESSL_USE_VIRTUAL_SERVER
               value: "{{ index .Values "nginx-ingress" "enabled" }}"
-            - name: VESSL_ALLOW_INSECURE_TLS
-              value: "{{ .Values.agent.allowInsecureTLS }}"
+            - name: VESSL_INSECURE_SKIP_TLS_VERIFY
+              value: "{{ .Values.agent.insecureSkipTLSVerify }}"
           volumeMounts:
             - name: access-token
               readOnly: true
