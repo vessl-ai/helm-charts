@@ -13,7 +13,7 @@ agent:
   clusterServiceType: Ingress # Ingress, LoadBalancer, NodePort
   insecureSkipTLSVerify: false
   region: "" # on-premise, <CLOUD_REGION>
-  gpuPools: [] # this property is only used for the oci providerType
+  resourceSpecs: [] # this property is only used for the oci providerType
 #    - name: "a10-test"
 #      cpuLimit: 1
 #      memoryLimit: "1Gi"
