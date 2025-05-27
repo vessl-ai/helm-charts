@@ -18,7 +18,7 @@ agent:
       processorType: "GPU"
       cpuLimit: 8
       memoryLimit: "32Gi"
-      gpuType: "A100-SXM4-80GB"
+      gpuType: "NVIDIA-A100-SXM4-80GB"
       gpuSliceLimit: 1
       gpuSliceType: "nvidia.com/mig-2g.20gb"
       priority: 1
@@ -28,7 +28,7 @@ agent:
           effect: "NoSchedule"
     - name: "mig-1g.10gb"
       processorType: "GPU"
-      gpuType: "A100-SXM4-80GB"
+      gpuType: "NVIDIA-A100-SXM4-80GB"
       cpuLimit: 4
       memoryLimit: "16Gi"
       gpuSliceLimit: 1
@@ -40,7 +40,7 @@ agent:
           effect: "NoSchedule"
     - name: "mig-3g.40gb"
       processorType: "GPU"
-      gpuType: "A100-SXM4-80GB"
+      gpuType: "NVIDIA-A100-SXM4-80GB"
       cpuLimit: 12
       memoryLimit: "48Gi"
       gpuSliceLimit: 1
