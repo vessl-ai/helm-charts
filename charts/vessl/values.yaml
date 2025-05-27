@@ -333,6 +333,9 @@ image-prepull:
 gpu-operator:
   enabled: true
 
+  validator:
+    driver:
+      enabled: false
   operator:
     cleanupCRD: true
 
