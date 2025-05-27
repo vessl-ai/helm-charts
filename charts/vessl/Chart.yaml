@@ -55,3 +55,7 @@ dependencies:
   version: "2.0.1"
   condition: nginx-ingress.enabled
   repository: https://helm.nginx.com/stable
+- name: gpu-operator
+  version: "v25.3.0"
+  condition: gpu-operator.enabled
+  repository: https://nvidia.github.io/gpu-operator

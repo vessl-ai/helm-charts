@@ -1,9 +1,9 @@
 agent:
-  accessToken: # required
-  clusterName:
+  accessToken: wOKTlWOgR0A09lYwOXqvzFyzGAAjY8Yl # required
+  clusterName: vessl-dgx-mig-auto
   providerType: on-premise # on-premise, aws, gcp, oci, azure
   imagePullPolicy:
-  apiServer: https://api.vessl.ai
+  apiServer: https://public-feature-mig-mixed-strategy.dev2.vssl.ai/
   logLevel: info
   env: prod
   image: "quay.io/vessl-ai/cluster-agent:0.6.30-rc2"
@@ -13,16 +13,43 @@ agent:
   clusterServiceType: Ingress # Ingress, LoadBalancer, NodePort
   insecureSkipTLSVerify: false
   region: "" # on-premise, <CLOUD_REGION>
-  resourceSpecs: [] # this property is only used for the oci providerType
-#    - name: "a10-test"
-#      cpuLimit: 1
-#      memoryLimit: "1Gi"
-#      gpuLimit: 1
-#      priority: 1
-#      tolerations:
-#        - key: "nvidia.com/gpu.present"
-#          operator: "Exists"
-#          effect: "NoSchedule"
+  resourceSpecs:
+    - name: "mig-2g.20gb"
+      processorType: "GPU"
+      cpuLimit: 8
+      memoryLimit: "32Gi"
+      gpuType: "A100-SXM4-80GB"
+      gpuSliceLimit: 1
+      gpuSliceType: "nvidia.com/mig-2g.20gb"
+      priority: 1
+      tolerations:
+        - key: "nvidia.com/gpu.present"
+          operator: "Exists"
+          effect: "NoSchedule"
+    - name: "mig-1g.10gb"
+      processorType: "GPU"
+      gpuType: "A100-SXM4-80GB"
+      cpuLimit: 4
+      memoryLimit: "16Gi"
+      gpuSliceLimit: 1
+      gpuSliceType: "nvidia.com/mig-1g.10gb"
+      priority: 1
+      tolerations:
+        - key: "nvidia.com/gpu.present"
+          operator: "Exists"
+          effect: "NoSchedule"
+    - name: "mig-3g.40gb"
+      processorType: "GPU"
+      gpuType: "A100-SXM4-80GB"
+      cpuLimit: 12
+      memoryLimit: "48Gi"
+      gpuSliceLimit: 1
+      gpuSliceType: "nvidia.com/mig-3g.40gb"
+      priority: 1
+      tolerations:
+        - key: "nvidia.com/gpu.present"
+          operator: "Exists"
+          effect: "NoSchedule"
 
   nodeSelector: {}
   tolerations:
@@ -58,35 +85,35 @@ agent:
                 values: ["manager"]
 
 # https://github.com/NVIDIA/k8s-device-plugin/tree/main/deployments/helm/nvidia-device-plugin
-nvidia-device-plugin:
-  enabled: true
-  deviceListStrategy: volume-mounts
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
-              - key: "feature.node.kubernetes.io/pci-10de.present"
-                operator: "In"
-                values:
-                  - "true"
-          - matchExpressions:
-              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
-              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
-                operator: "In"
-                values:
-                  - "NVIDIA"
-          - matchExpressions:
-              # We allow a GFD deployment to be forced by setting the following label to "true"
-              - key: "nvidia.com/gpu.present"
-                operator: In
-                values:
-                  - "true"
-  gfd:
-    enabled: true
-  nfd:
-    enabled: false
+# nvidia-device-plugin:
+#   enabled: true
+#   deviceListStrategy: volume-mounts
+#   affinity:
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#           - matchExpressions:
+#               # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
+#               - key: "feature.node.kubernetes.io/pci-10de.present"
+#                 operator: "In"
+#                 values:
+#                   - "true"
+#           - matchExpressions:
+#               # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+#               - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+#                 operator: "In"
+#                 values:
+#                   - "NVIDIA"
+#           - matchExpressions:
+#               # We allow a GFD deployment to be forced by setting the following label to "true"
+#               - key: "nvidia.com/gpu.present"
+#                 operator: In
+#                 values:
+#                   - "true"
+#   gfd:
+#     enabled: true
+#   nfd:
+#     enabled: false
 
 # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
 nfd:
@@ -501,3 +528,82 @@ prometheus-adapter:
 
 image-prepull:
   enabled: false
+
+gpu-operator:
+  enabled: true
+
+  operator:
+    cleanupCRD: true
+
+  mig:
+    strategy: mixed
+
+  driver:
+    enabled: false
+
+  devicePlugin:
+    enabled: true
+    strategy: mixed
+    deviceListStrategy: volume-mounts
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
+                - key: "feature.node.kubernetes.io/pci-10de.present"
+                  operator: "In"
+                  values:
+                    - "true"
+            - matchExpressions:
+                # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+                - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+                  operator: "In"
+                  values:
+                    - "NVIDIA"
+            - matchExpressions:
+                # We allow a GFD deployment to be forced by setting the following label to "true"
+                - key: "nvidia.com/gpu.present"
+                  operator: In
+                  values:
+                    - "true"
+    gfd:
+      enabled: true
+    nfd:
+      enabled: false
+
+  migManager:
+    enabled: true
+    env:
+      - name: WITH_REBOOT
+        value: "true"
+    resources: {}
+    config:
+      name: custom-mig-parted-configs
+      create: true
+      data:
+        config.yaml: |-
+          version: v1
+          mig-configs:
+            mixed-gpus:
+              - device-filter: "0"
+                devices: all
+                mig-enabled: true
+                mig-devices:
+                  "1g.10gb": 7
+
+              - device-filter: "1"
+                devices: all
+                mig-enabled: true
+                mig-devices:
+                  "2g.20gb": 3
+
+              - device-filter: "2"
+                devices: all
+                mig-enabled: true
+                mig-devices:
+                  "3g.40gb": 2
+
+              - device-filter: "4"
+                devices: all
+                mig-enabled: false
