@@ -221,41 +221,41 @@ node-exporter:
       v1.k8s.vessl.ai/type: node-exporter
 
 # https://github.com/NVIDIA/dcgm-exporter/tree/main/deployment
-dcgm-exporter:
-  enabled: true
-  service:
-    annotations:
-      prometheus.io/scrape: "true"
-      v1.k8s.vessl.ai/managed: "true"
-      v1.k8s.vessl.ai/type: dcgm-exporter
-  serviceMonitor:
-    enabled: false
-  kubeletPath: "/var/lib/kubelet/pod-resources"
-  tolerations:
-    - operator: "Exists"
-      effect: "NoSchedule"
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
-              - key: "feature.node.kubernetes.io/pci-10de.present"
-                operator: "In"
-                values:
-                  - "true"
-          - matchExpressions:
-              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
-              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
-                operator: "In"
-                values:
-                  - "NVIDIA"
-          - matchExpressions:
-              # We allow a GFD deployment to be forced by setting the following label to "true"
-              - key: "nvidia.com/gpu.present"
-                operator: In
-                values:
-                  - "true"
+# dcgm-exporter:
+#   enabled: true
+#   service:
+#     annotations:
+#       prometheus.io/scrape: "true"
+#       v1.k8s.vessl.ai/managed: "true"
+#       v1.k8s.vessl.ai/type: dcgm-exporter
+#   serviceMonitor:
+#     enabled: false
+#   kubeletPath: "/var/lib/kubelet/pod-resources"
+#   tolerations:
+#     - operator: "Exists"
+#       effect: "NoSchedule"
+#   affinity:
+#     nodeAffinity:
+#       requiredDuringSchedulingIgnoredDuringExecution:
+#         nodeSelectorTerms:
+#           - matchExpressions:
+#               # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
+#               - key: "feature.node.kubernetes.io/pci-10de.present"
+#                 operator: "In"
+#                 values:
+#                   - "true"
+#           - matchExpressions:
+#               # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+#               - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+#                 operator: "In"
+#                 values:
+#                   - "NVIDIA"
+#           - matchExpressions:
+#               # We allow a GFD deployment to be forced by setting the following label to "true"
+#               - key: "nvidia.com/gpu.present"
+#                 operator: In
+#                 values:
+#                   - "true"
 
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus
 prometheus-remote-write:

@@ -18,14 +18,6 @@ dependencies:
   version: "4.44.0"
   condition: node-exporter.enabled
   repository: https://prometheus-community.github.io/helm-charts
-- name: dcgm-exporter
-  version: "4.0.4"
-  condition: dcgm-exporter.enabled
-  repository: https://nvidia.github.io/dcgm-exporter/helm-charts
-- name: nvidia-device-plugin
-  version: "0.17.0"
-  condition: nvidia-device-plugin.enabled
-  repository: https://nvidia.github.io/k8s-device-plugin
 - name: prometheus
   alias: prometheus-remote-write
   version: "23.2.0"
