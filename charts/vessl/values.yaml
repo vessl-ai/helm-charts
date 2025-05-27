@@ -1,9 +1,9 @@
 agent:
-  accessToken: wOKTlWOgR0A09lYwOXqvzFyzGAAjY8Yl # required
-  clusterName: vessl-dgx-mig
+  accessToken: # required
+  clusterName:
   providerType: on-premise # on-premise, aws, gcp, oci, azure
   imagePullPolicy:
-  apiServer: https://public-feature-mig-mixed-strategy.dev2.vssl.ai/
+  apiServer: https://api.vessl.ai
   logLevel: info
   env: prod
   image: "quay.io/vessl-ai/cluster-agent:0.6.30-rc2"
@@ -13,46 +13,16 @@ agent:
   clusterServiceType: Ingress # Ingress, LoadBalancer, NodePort
   insecureSkipTLSVerify: false
   region: "" # on-premise, <CLOUD_REGION>
-  resourceSpecs:
-    - name: "mig-2g.20gb"
-      processorType: "GPU"
-      cpuLimit: 8
-      memoryLimit: "32Gi"
-      gpuType: "A100-SXM4-80GB"
-      gpuSliceLimit: 1
-      gpuSliceType: "nvidia.com/mig-2g.20gb"
-      priority: 1
-      # labels:
-      #   - key: "v1.k8s.vessl.ai/"
-      #     value: "true"
-      tolerations:
-        - key: "nvidia.com/gpu.present"
-          operator: "Exists"
-          effect: "NoSchedule"
-    - name: "mig-1g.10gb"
-      processorType: "GPU"
-      gpuType: "A100-SXM4-80GB"
-      cpuLimit: 4
-      memoryLimit: "16Gi"
-      gpuSliceLimit: 1
-      gpuSliceType: "nvidia.com/mig-1g.10gb"
-      priority: 1
-      tolerations:
-        - key: "nvidia.com/gpu.present"
-          operator: "Exists"
-          effect: "NoSchedule"
-    - name: "mig-3g.40gb"
-      processorType: "GPU"
-      gpuType: "A100-SXM4-80GB"
-      cpuLimit: 12
-      memoryLimit: "48Gi"
-      gpuSliceLimit: 1
-      gpuSliceType: "nvidia.com/mig-3g.40gb"
-      priority: 1
-      tolerations:
-        - key: "nvidia.com/gpu.present"
-          operator: "Exists"
-          effect: "NoSchedule"
+  resourceSpecs: [] # this property is only used for the oci providerType
+#    - name: "a10-test"
+#      cpuLimit: 1
+#      memoryLimit: "1Gi"
+#      gpuLimit: 1
+#      priority: 1
+#      tolerations:
+#        - key: "nvidia.com/gpu.present"
+#          operator: "Exists"
+#          effect: "NoSchedule"
 
   nodeSelector: {}
   tolerations:
@@ -88,36 +58,35 @@ agent:
                 values: ["manager"]
 
 # https://github.com/NVIDIA/k8s-device-plugin/tree/main/deployments/helm/nvidia-device-plugin
-# nvidia-device-plugin:
-#   enabled: true
-#   deviceListStrategy: volume-mounts
-#   migStrategy: mixed
-#   affinity:
-#     nodeAffinity:
-#       requiredDuringSchedulingIgnoredDuringExecution:
-#         nodeSelectorTerms:
-#           - matchExpressions:
-#               # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
-#               - key: "feature.node.kubernetes.io/pci-10de.present"
-#                 operator: "In"
-#                 values:
-#                   - "true"
-#           - matchExpressions:
-#               # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
-#               - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
-#                 operator: "In"
-#                 values:
-#                   - "NVIDIA"
-#           - matchExpressions:
-#               # We allow a GFD deployment to be forced by setting the following label to "true"
-#               - key: "nvidia.com/gpu.present"
-#                 operator: In
-#                 values:
-#                   - "true"
-#   gfd:
-#     enabled: true
-#   nfd:
-#     enabled: false
+nvidia-device-plugin:
+  enabled: true
+  deviceListStrategy: volume-mounts
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
+              - key: "feature.node.kubernetes.io/pci-10de.present"
+                operator: "In"
+                values:
+                  - "true"
+          - matchExpressions:
+              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+                operator: "In"
+                values:
+                  - "NVIDIA"
+          - matchExpressions:
+              # We allow a GFD deployment to be forced by setting the following label to "true"
+              - key: "nvidia.com/gpu.present"
+                operator: In
+                values:
+                  - "true"
+  gfd:
+    enabled: true
+  nfd:
+    enabled: false
 
 # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
 nfd:
@@ -172,11 +141,11 @@ kube-state-metrics:
       v1.k8s.vessl.ai/managed: "true"
       v1.k8s.vessl.ai/type: kube-state-metrics
   metricLabelsAllowlist:
-    # This option makes `kube_pod_labels`, `kube_deployment_labels`, etc. contain all labels
-    # (including those like `label_v1_k8s_vessl_ai_partition="xxxx"`) of the Kubernetes object.
-    # This is used when aggregating values by Kubernetes resources' `*_vessl_ai_*` labels
-    # to provide metrics and graphs.
-    # The list should be extended when a new kind of resource requires label-joining.
+  # This option makes `kube_pod_labels`, `kube_deployment_labels`, etc. contain all labels
+  # (including those like `label_v1_k8s_vessl_ai_partition="xxxx"`) of the Kubernetes object.
+  # This is used when aggregating values by Kubernetes resources' `*_vessl_ai_*` labels
+  # to provide metrics and graphs.
+  # The list should be extended when a new kind of resource requires label-joining.
     - deployments=[*]
     - jobs=[*]
     - nodes=[*]
@@ -330,65 +299,57 @@ prometheus-remote-write:
   prometheus-pushgateway:
     enabled: false
   relabelConfigs:
-    - source_labels:
-        [
-          __meta_kubernetes_endpoint_address_target_kind,
-          __meta_kubernetes_endpoint_address_target_name,
-        ]
-      separator: ;
-      regex: Node;(.*)
-      target_label: node
-      replacement: ${1}
-      action: replace
-    - source_labels:
-        [
-          __meta_kubernetes_endpoint_address_target_kind,
-          __meta_kubernetes_endpoint_address_target_name,
-        ]
-      separator: ;
-      regex: Pod;(.*)
-      target_label: pod
-      replacement: ${1}
-      action: replace
-    - source_labels: [__meta_kubernetes_namespace]
-      separator: ;
-      regex: (.*)
-      target_label: namespace
-      replacement: $1
-      action: replace
-    - source_labels: [__meta_kubernetes_service_name]
-      separator: ;
-      regex: (.*)
-      target_label: service
-      replacement: $1
-      action: replace
-    - source_labels: [__meta_kubernetes_pod_name]
-      separator: ;
-      regex: (.*)
-      target_label: pod
-      replacement: $1
-      action: replace
-    - source_labels: [__meta_kubernetes_pod_container_name]
-      separator: ;
-      regex: (.*)
-      target_label: container
-      replacement: $1
-      action: replace
-    - source_labels: [__meta_kubernetes_service_name]
-      separator: ;
-      regex: (.*)
-      target_label: job
-      replacement: ${1}
-      action: replace
-    - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_partition"]
-      target_label: "vessl_partition"
-    - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_type"]
-      target_label: "vessl_type"
-    - separator: ;
-      regex: (.*)
-      target_label: endpoint
-      replacement: metrics
-      action: replace
+  - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
+    separator: ;
+    regex: Node;(.*)
+    target_label: node
+    replacement: ${1}
+    action: replace
+  - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
+    separator: ;
+    regex: Pod;(.*)
+    target_label: pod
+    replacement: ${1}
+    action: replace
+  - source_labels: [__meta_kubernetes_namespace]
+    separator: ;
+    regex: (.*)
+    target_label: namespace
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_service_name]
+    separator: ;
+    regex: (.*)
+    target_label: service
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_pod_name]
+    separator: ;
+    regex: (.*)
+    target_label: pod
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_pod_container_name]
+    separator: ;
+    regex: (.*)
+    target_label: container
+    replacement: $1
+    action: replace
+  - source_labels: [__meta_kubernetes_service_name]
+    separator: ;
+    regex: (.*)
+    target_label: job
+    replacement: ${1}
+    action: replace
+  - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_partition"]
+    target_label: "vessl_partition"
+  - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_type"]
+    target_label: "vessl_type"
+  - separator: ;
+    regex: (.*)
+    target_label: endpoint
+    replacement: metrics
+    action: replace
 
 # https://github.com/rancher/local-path-provisioner/tree/master/deploy/chart/local-path-provisioner
 local-path-provisioner:
@@ -532,377 +493,11 @@ prometheus-adapter:
       - seriesQuery: 'DCGM_FI_DEV_GPU_UTIL{pod!=""}'
         resources:
           overrides:
-            namespace: { resource: "namespace" }
-            pod: { resource: "pod" }
+            namespace: {resource: "namespace"}
+            pod: {resource: "pod"}
         name:
           as: "gpu_util"
         metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
 
 image-prepull:
   enabled: false
-
-gpu-operator:
-  enabled: true
-
-  daemonsets:
-    labels: {}
-    annotations: {}
-    priorityClassName: system-node-critical
-    tolerations:
-      - key: nvidia.com/gpu
-        operator: Exists
-        effect: NoSchedule
-    # configuration for controlling update strategy("OnDelete" or "RollingUpdate") of GPU Operands
-    # note that driver Daemonset is always set with OnDelete to avoid unintended disruptions
-    updateStrategy: "RollingUpdate"
-    # configuration for controlling rolling update of GPU Operands
-    rollingUpdate:
-      # maximum number of nodes to simultaneously apply pod updates on.
-      # can be specified either as number or percentage of nodes. Default 1.
-      maxUnavailable: "1"
-
-  operator:
-    repository: nvcr.io/nvidia
-    image: gpu-operator
-    # If version is not specified, then default is to use chart.AppVersion
-    #version: ""
-    imagePullPolicy: IfNotPresent
-    imagePullSecrets: []
-    priorityClassName: system-node-critical
-    runtimeClass: nvidia
-    use_ocp_driver_toolkit: false
-    # cleanup CRD on chart un-install
-    cleanupCRD: false
-    # upgrade CRD on chart upgrade, requires --disable-openapi-validation flag
-    # to be passed during helm upgrade.
-    upgradeCRD: true
-    initContainer:
-      image: cuda
-      repository: nvcr.io/nvidia
-      version: 12.8.1-base-ubi9
-      imagePullPolicy: IfNotPresent
-    tolerations:
-      - key: "node-role.kubernetes.io/master"
-        operator: "Equal"
-        value: ""
-        effect: "NoSchedule"
-      - key: "node-role.kubernetes.io/control-plane"
-        operator: "Equal"
-        value: ""
-        effect: "NoSchedule"
-    annotations:
-      openshift.io/scc: restricted-readonly
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-                - key: "node-role.kubernetes.io/master"
-                  operator: In
-                  values: [""]
-          - weight: 1
-            preference:
-              matchExpressions:
-                - key: "node-role.kubernetes.io/control-plane"
-                  operator: In
-                  values: [""]
-    logging:
-      # Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano')
-      timeEncoding: epoch
-      # Zap Level to configure the verbosity of logging. Can be one of 'debug', 'info', 'error', or any integer value > 0 which corresponds to custom debug levels of increasing verbosity
-      level: info
-      # Development Mode defaults(encoder=consoleEncoder,logLevel=Debug,stackTraceLevel=Warn)
-      # Production Mode defaults(encoder=jsonEncoder,logLevel=Info,stackTraceLevel=Error)
-      develMode: false
-    resources:
-      limits:
-        cpu: 500m
-        memory: 350Mi
-      requests:
-        cpu: 200m
-        memory: 100Mi
-
-  mig:
-    strategy: mixed
-
-  driver:
-    enabled: true
-    nvidiaDriverCRD:
-      enabled: false
-      deployDefaultCR: true
-      driverType: gpu
-      nodeSelector: {}
-    kernelModuleType: "auto"
-
-    # NOTE: useOpenKernelModules has been deprecated and made no-op. Please use kernelModuleType instead.
-    # useOpenKernelModules: false
-
-    # use pre-compiled packages for NVIDIA driver installation.
-    # only supported for as a tech-preview feature on ubuntu22.04 kernels.
-    usePrecompiled: false
-    repository: nvcr.io/nvidia
-    image: driver
-    version: "570.133.20"
-    imagePullPolicy: IfNotPresent
-    imagePullSecrets: []
-    startupProbe:
-      initialDelaySeconds: 60
-      periodSeconds: 10
-      # nvidia-smi can take longer than 30s in some cases
-      # ensure enough timeout is set
-      timeoutSeconds: 60
-      failureThreshold: 120
-    rdma:
-      enabled: false
-      useHostMofed: false
-    upgradePolicy:
-      # global switch for automatic upgrade feature
-      # if set to false all other options are ignored
-      autoUpgrade: true
-      # how many nodes can be upgraded in parallel
-      # 0 means no limit, all nodes will be upgraded in parallel
-      maxParallelUpgrades: 1
-      # maximum number of nodes with the driver installed, that can be unavailable during
-      # the upgrade. Value can be an absolute number (ex: 5) or
-      # a percentage of total nodes at the start of upgrade (ex:
-      # 10%). Absolute number is calculated from percentage by rounding
-      # up. By default, a fixed value of 25% is used.'
-      maxUnavailable: 25%
-      # options for waiting on pod(job) completions
-      waitForCompletion:
-        timeoutSeconds: 0
-        podSelector: ""
-      # options for gpu pod deletion
-      gpuPodDeletion:
-        force: false
-        timeoutSeconds: 300
-        deleteEmptyDir: false
-      # options for node drain (`kubectl drain`) before the driver reload
-      # this is required only if default GPU pod deletions done by the operator
-      # are not sufficient to re-install the driver
-      drain:
-        enable: false
-        force: false
-        podSelector: ""
-        # It's recommended to set a timeout to avoid infinite drain in case non-fatal error keeps happening on retries
-        timeoutSeconds: 300
-        deleteEmptyDir: false
-    manager:
-      image: k8s-driver-manager
-      repository: nvcr.io/nvidia/cloud-native
-      # When choosing a different version of k8s-driver-manager, DO NOT downgrade to a version lower than v0.6.4
-      # to ensure k8s-driver-manager stays compatible with gpu-operator starting from v24.3.0
-      version: v0.8.0
-      imagePullPolicy: IfNotPresent
-      env:
-        - name: ENABLE_GPU_POD_EVICTION
-          value: "true"
-        - name: ENABLE_AUTO_DRAIN
-          value: "false"
-        - name: DRAIN_USE_FORCE
-          value: "false"
-        - name: DRAIN_POD_SELECTOR_LABEL
-          value: ""
-        - name: DRAIN_TIMEOUT_SECONDS
-          value: "0s"
-        - name: DRAIN_DELETE_EMPTYDIR_DATA
-          value: "false"
-    env: []
-    resources: {}
-    # Private mirror repository configuration
-    repoConfig:
-      configMapName: ""
-    # custom ssl key/certificate configuration
-    certConfig:
-      name: ""
-    # vGPU licensing configuration
-    licensingConfig:
-      configMapName: ""
-      nlsEnabled: true
-    # vGPU topology daemon configuration
-    virtualTopology:
-      config: ""
-    # kernel module configuration for NVIDIA driver
-    kernelModuleConfig:
-      name: ""
-
-  # toolkit:
-  #   enabled: true
-  #   repository: nvcr.io/nvidia/k8s
-  #   image: container-toolkit
-  #   version: v1.17.7-ubuntu20.04
-  #   imagePullPolicy: IfNotPresent
-  #   imagePullSecrets: []
-  #   env: []
-  #   resources: {}
-  #   installDir: "/usr/local/nvidia"
-
-  devicePlugin:
-    enabled: true
-    deviceListStrategy: volume-mounts
-    migStrategy: mixed
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
-                - key: "feature.node.kubernetes.io/pci-10de.present"
-                  operator: "In"
-                  values:
-                    - "true"
-            - matchExpressions:
-                # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
-                - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
-                  operator: "In"
-                  values:
-                    - "NVIDIA"
-            - matchExpressions:
-                # We allow a GFD deployment to be forced by setting the following label to "true"
-                - key: "nvidia.com/gpu.present"
-                  operator: In
-                  values:
-                    - "true"
-    gfd:
-      enabled: true
-    nfd:
-      enabled: true
-    # Plugin configuration
-    # Use "name" to either point to an existing ConfigMap or to create a new one with a list of configurations(i.e with create=true).
-    # Use "data" to build an integrated ConfigMap from a set of configurations as
-    # part of this helm chart. An example of setting "data" might be:
-    # config:
-    #   name: device-plugin-config
-    #   create: true
-    #   data:
-    #     default: |-
-    #       version: v1
-    #       flags:
-    #         migStrategy: none
-    #     mig-single: |-
-    #       version: v1
-    #       flags:
-    #         migStrategy: single
-    #     mig-mixed: |-
-    #       version: v1
-    #       flags:
-    #         migStrategy: mixed
-    # config:
-    #   # Create a ConfigMap (default: false)
-    #   create: false
-    #   # ConfigMap name (either existing or to create a new one with create=true above)
-    #   name: ""
-    #   # Default config name within the ConfigMap
-    #   default: ""
-    #   # Data section for the ConfigMap to create (i.e only applies when create=true)
-    #   data: {}
-    # # MPS related configuration for the plugin
-    # mps:
-    #   # MPS root path on the host
-    #   root: "/run/nvidia/mps"
-
-  dcgmExporter:
-    enabled: true
-    # repository: nvcr.io/nvidia/k8s
-    # image: dcgm-exporter
-    # version: 4.2.3-4.1.1-ubuntu22.04
-    # imagePullPolicy: IfNotPresent
-    # env:
-    #   - name: DCGM_EXPORTER_LISTEN
-    #     value: ":9400"
-    #   - name: DCGM_EXPORTER_KUBERNETES
-    #     value: "true"
-    #   - name: DCGM_EXPORTER_COLLECTORS
-    #     value: "/etc/dcgm-exporter/dcp-metrics-included.csv"
-    # resources: {}
-    # service:
-    #   internalTrafficPolicy: Cluster
-    # serviceMonitor:
-    #   enabled: false
-    #   interval: 15s
-    #   honorLabels: false
-    #   additionalLabels: {}
-    #   relabelings: []
-      # - source_labels:
-      #     - __meta_kubernetes_pod_node_name
-      #   regex: (.*)
-      #   target_label: instance
-      #   replacement: $1
-      #   action: replace
-    # DCGM Exporter configuration
-    # This block is used to configure DCGM Exporter to emit a customized list of metrics.
-    # Use "name" to either point to an existing ConfigMap or to create a new one with a
-    # list of configurations (i.e with create=true).
-    # When pointing to an existing ConfigMap, the ConfigMap must exist in the same namespace as the release.
-    # The metrics are expected to be listed under a key called `dcgm-metrics.csv`.
-    # Use "data" to build an integrated ConfigMap from a set of custom metrics as
-    # part of the chart. An example of some custom metrics are shown below. Note that
-    # the contents of "data" must be in CSV format and be valid DCGM Exporter metric configurations.
-    # config:
-    # name: custom-dcgm-exporter-metrics
-    # create: true
-    # data: |-
-    # Format
-    # If line starts with a '#' it is considered a comment
-    # DCGM FIELD, Prometheus metric type, help message
-
-    # Clocks
-    # DCGM_FI_DEV_SM_CLOCK,  gauge, SM clock frequency (in MHz).
-    # DCGM_FI_DEV_MEM_CLOCK, gauge, Memory clock frequency (in MHz).
-  # gfd:
-  #   enabled: true
-  #   repository: nvcr.io/nvidia
-  #   image: k8s-device-plugin
-  #   version: v0.17.2
-  #   imagePullPolicy: IfNotPresent
-  #   imagePullSecrets: []
-  #   env:
-  #     - name: GFD_SLEEP_INTERVAL
-  #       value: 60s
-  #     - name: GFD_FAIL_ON_INIT_ERROR
-  #       value: "true"
-  #   resources: {}
-
-  migManager:
-    enabled: true
-    repository: nvcr.io/nvidia/cloud-native
-    image: k8s-mig-manager
-    version: v0.12.1-ubuntu20.04
-    imagePullPolicy: IfNotPresent
-    imagePullSecrets: []
-    env:
-      - name: WITH_REBOOT
-        value: "false"
-    resources: {}
-    # MIG configuration
-    # Use "name" to either point to an existing ConfigMap or to create a new one with a list of configurations(i.e with create=true).
-    # Use "data" to build an integrated ConfigMap from a set of configurations as
-    # part of this helm chart. An example of setting "data" might be:
-    config:
-      name: custom-mig-parted-configs
-      create: true
-      data:
-        config.yaml: |-
-          version: v1
-          mig-configs:
-            mixed-gpus:
-              - device-filter: "00000000:01:00.0"
-                devices: all
-                mig-enabled: true
-                mig-devices:
-                  "1g.10gb": 7
-
-              - device-filter: "00000000:47:00.0"
-                devices: all
-                mig-enabled: true
-                mig-devices:
-                  "2g.20gb": 3
-
-              - device-filter: "00000000:81:00.0"
-                devices: all
-                mig-enabled: true
-                mig-devices:
-                  "3g.40gb": 2
-
-  
