@@ -1,9 +1,9 @@
 agent:
-  accessToken: wOKTlWOgR0A09lYwOXqvzFyzGAAjY8Yl # required
-  clusterName: vessl-dgx-mig-auto
+  accessToken: # required
+  clusterName:
   providerType: on-premise # on-premise, aws, gcp, oci, azure
   imagePullPolicy:
-  apiServer: https://public-feature-mig-mixed-strategy.dev2.vssl.ai/
+  apiServer: https://api.vessl.ai
   logLevel: info
   env: prod
   image: "quay.io/vessl-ai/cluster-agent:0.6.30-rc2"
@@ -13,43 +13,19 @@ agent:
   clusterServiceType: Ingress # Ingress, LoadBalancer, NodePort
   insecureSkipTLSVerify: false
   region: "" # on-premise, <CLOUD_REGION>
-  resourceSpecs:
-    - name: "mig-2g.20gb"
-      processorType: "GPU"
-      cpuLimit: 8
-      memoryLimit: "32Gi"
-      gpuType: "NVIDIA-A100-SXM4-80GB"
-      gpuSliceLimit: 1
-      gpuSliceType: "nvidia.com/mig-2g.20gb"
-      priority: 1
-      tolerations:
-        - key: "nvidia.com/gpu.present"
-          operator: "Exists"
-          effect: "NoSchedule"
-    - name: "mig-1g.10gb"
-      processorType: "GPU"
-      gpuType: "NVIDIA-A100-SXM4-80GB"
-      cpuLimit: 4
-      memoryLimit: "16Gi"
-      gpuSliceLimit: 1
-      gpuSliceType: "nvidia.com/mig-1g.10gb"
-      priority: 1
-      tolerations:
-        - key: "nvidia.com/gpu.present"
-          operator: "Exists"
-          effect: "NoSchedule"
-    - name: "mig-3g.40gb"
-      processorType: "GPU"
-      gpuType: "NVIDIA-A100-SXM4-80GB"
-      cpuLimit: 12
-      memoryLimit: "48Gi"
-      gpuSliceLimit: 1
-      gpuSliceType: "nvidia.com/mig-3g.40gb"
-      priority: 1
-      tolerations:
-        - key: "nvidia.com/gpu.present"
-          operator: "Exists"
-          effect: "NoSchedule"
+  resourceSpecs: [] # this property is only used for the oci providerType
+#    - name: "a10-test"
+#      cpuLimit: 1
+#      memoryLimit: "1Gi"
+#      gpuLimit: 1
+#      priority: 1
+#      gpuType: "NVIDIA-A100-SXM4-80GB" # if MIG is enabled, this property is required
+#      gpuSliceLimit: 1 # if MIG is enabled, this property is required
+#      gpuSliceType: "nvidia.com/mig-2g.20gb" # if MIG is enabled, this property is required
+#      tolerations:
+#        - key: "nvidia.com/gpu.present"
+#          operator: "Exists"
+#          effect: "NoSchedule"
 
   nodeSelector: {}
   tolerations:
@@ -83,37 +59,6 @@ agent:
               - key: "v1.k8s.vessl.ai/dedicated"
                 operator: "In"
                 values: ["manager"]
-
-# https://github.com/NVIDIA/k8s-device-plugin/tree/main/deployments/helm/nvidia-device-plugin
-# nvidia-device-plugin:
-#   enabled: true
-#   deviceListStrategy: volume-mounts
-#   affinity:
-#     nodeAffinity:
-#       requiredDuringSchedulingIgnoredDuringExecution:
-#         nodeSelectorTerms:
-#           - matchExpressions:
-#               # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
-#               - key: "feature.node.kubernetes.io/pci-10de.present"
-#                 operator: "In"
-#                 values:
-#                   - "true"
-#           - matchExpressions:
-#               # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
-#               - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
-#                 operator: "In"
-#                 values:
-#                   - "NVIDIA"
-#           - matchExpressions:
-#               # We allow a GFD deployment to be forced by setting the following label to "true"
-#               - key: "nvidia.com/gpu.present"
-#                 operator: In
-#                 values:
-#                   - "true"
-#   gfd:
-#     enabled: true
-#   nfd:
-#     enabled: false
 
 # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
 nfd:
@@ -219,43 +164,6 @@ node-exporter:
       prometheus.io/scrape: "true"
       v1.k8s.vessl.ai/managed: "true"
       v1.k8s.vessl.ai/type: node-exporter
-
-# https://github.com/NVIDIA/dcgm-exporter/tree/main/deployment
-# dcgm-exporter:
-#   enabled: true
-#   service:
-#     annotations:
-#       prometheus.io/scrape: "true"
-#       v1.k8s.vessl.ai/managed: "true"
-#       v1.k8s.vessl.ai/type: dcgm-exporter
-#   serviceMonitor:
-#     enabled: false
-#   kubeletPath: "/var/lib/kubelet/pod-resources"
-#   tolerations:
-#     - operator: "Exists"
-#       effect: "NoSchedule"
-#   affinity:
-#     nodeAffinity:
-#       requiredDuringSchedulingIgnoredDuringExecution:
-#         nodeSelectorTerms:
-#           - matchExpressions:
-#               # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
-#               - key: "feature.node.kubernetes.io/pci-10de.present"
-#                 operator: "In"
-#                 values:
-#                   - "true"
-#           - matchExpressions:
-#               # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
-#               - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
-#                 operator: "In"
-#                 values:
-#                   - "NVIDIA"
-#           - matchExpressions:
-#               # We allow a GFD deployment to be forced by setting the following label to "true"
-#               - key: "nvidia.com/gpu.present"
-#                 operator: In
-#                 values:
-#                   - "true"
 
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus
 prometheus-remote-write:
@@ -530,7 +438,7 @@ image-prepull:
   enabled: false
 
 gpu-operator:
-  enabled: true
+  enabled: false
 
   operator:
     cleanupCRD: true
@@ -594,22 +502,4 @@ gpu-operator:
                   "3g.40gb": 2
             all-disabled:
               - devices: all
-                mig-enabled: false
-            mixed-gpus:
-              - devices: [0]
-                mig-enabled: true
-                mig-devices:
-                  "1g.10gb": 7
-
-              - devices: [1]
-                mig-enabled: true
-                mig-devices:
-                  "2g.20gb": 3
-
-              - devices: [2]
-                mig-enabled: true
-                mig-devices:
-                  "3g.40gb": 2
-
-              - devices: [4]
                 mig-enabled: false
