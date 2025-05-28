@@ -382,7 +382,7 @@ prometheus-remote-write:
 local-path-provisioner:
   enabled: true
   storageClass:
-    name: "vessl-local-path"
+    name: "local-path"
     provisionerName: "rancher.io/local-path"
   helperImage:
     repository: "quay.io/vessl-ai/busybox"
