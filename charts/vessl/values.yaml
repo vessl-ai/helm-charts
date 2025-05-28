@@ -576,7 +576,7 @@ gpu-operator:
     enabled: true
     env:
       - name: WITH_REBOOT
-        value: "true"
+        value: "false"
     resources: {}
     config:
       name: custom-mig-parted-configs
@@ -585,6 +585,9 @@ gpu-operator:
         config.yaml: |-
           version: v1
           mig-configs:
+            all-disabled:
+              - devices: all
+                mig-enabled: false
             mixed-gpus:
               - device-filter: "0"
                 devices: all
