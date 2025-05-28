@@ -585,6 +585,13 @@ gpu-operator:
         config.yaml: |-
           version: v1
           mig-configs:
+            all-balanced:
+              - devices: all
+                mig-enabled: true
+                mig-devices:
+                  "1g.10gb": 7
+                  "2g.20gb": 3
+                  "3g.40gb": 2
             all-disabled:
               - devices: all
                 mig-enabled: false
