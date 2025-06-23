@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 PROJ_NAME=$(basename "$VOL_DIR")
@@ -12,27 +12,31 @@ _create_dir() {
 }
 
 _check_disk_space() {
-    read TOTAL_MB AVAIL_MB < <(df --output=size,avail --block-size=1M "$VOL_DIR" | tail -n1)
+    OUTPUT=$(df --output=size,avail --block-size=1M "$VOL_DIR" | tail -n1)
+    TOTAL_MB=$(echo "$OUTPUT" | awk '{print $1}')
+    AVAIL_MB=$(echo "$OUTPUT" | awk '{print $2}')
+
     /bin/echo "Disk Total: ${TOTAL_MB}MiB, Available: ${AVAIL_MB}MiB"
 
-    MIN_FREE_MB=$(( TOTAL_MB * 25 / 100 ))
+    MIN_FREE_MB=$(expr "$TOTAL_MB" / 4)
     /bin/echo "Require at least 25% free: ${MIN_FREE_MB}MiB"
 
     ALLOC_MB=$(du --apparent-size -BM /opt/local-path-provisioner/*.img 2>/dev/null \
       | awk '/total/ {print $1}' | sed 's/M//')
-    ALLOC_MB=${ALLOC_MB:-0}
+    [ -z "$ALLOC_MB" ] && ALLOC_MB=0
     /bin/echo "Already reserved: ${ALLOC_MB}MiB"
 
-    TOTAL_REQUESTED_MB=$((ALLOC_MB + VOL_SIZE_MB))
+    TOTAL_REQUESTED_MB=$(expr "$ALLOC_MB" + "$VOL_SIZE_MB")
     /bin/echo "Total after allocation: ${TOTAL_REQUESTED_MB}MiB"
 
-    if (( TOTAL_REQUESTED_MB > TOTAL_MB )); then
+    if [ "$TOTAL_REQUESTED_MB" -gt "$TOTAL_MB" ]; then
         /bin/echo -e "\033[1;31mError: Total reservation (${TOTAL_REQUESTED_MB}MiB) exceeds disk (${TOTAL_MB}MiB)\033[0m"
         exit 1
     fi
 
-    if (( TOTAL_MB - TOTAL_REQUESTED_MB < MIN_FREE_MB )); then
-        /bin/echo -e "\033[1;31mError: Only $(( TOTAL_MB - TOTAL_REQUESTED_MB ))MiB free would remain (<25%)\033[0m"
+    REMAIN_MB=$(expr "$TOTAL_MB" - "$TOTAL_REQUESTED_MB")
+    if [ "$REMAIN_MB" -lt "$MIN_FREE_MB" ]; then
+        /bin/echo -e "\033[1;31mError: Only ${REMAIN_MB}MiB free would remain (<25%)\033[0m"
         exit 1
     fi
 }
