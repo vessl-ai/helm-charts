@@ -14,7 +14,7 @@ _setup_quota() {
     /bin/echo -e "\033[1;32mSetting up quota...\033[0m"
     VOL_SIZE_MB=$((VOL_SIZE_BYTES / 1024 / 1024))
     /bin/echo -e "\033[1;32mCreating image file\033[0m: /opt/local-path-provisioner/${PROJ_NAME}.img"
-    dd if=/dev/zero of=/opt/local-path-provisioner/${PROJ_NAME}.img bs=1M count="${VOL_SIZE_MB}"
+    fallocate -l ${VOL_SIZE_MB}M /opt/local-path-provisioner/${PROJ_NAME}.img
     sync
     /bin/echo -e "\033[1;32mAttaching image file to loopback device\033[0m"
     LOOPDEV=$(losetup --find --show /opt/local-path-provisioner/${PROJ_NAME}.img)

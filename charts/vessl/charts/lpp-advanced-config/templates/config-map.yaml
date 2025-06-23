@@ -27,11 +27,11 @@ data:
           securityContext:
             privileged: true
           volumeMounts:
-          - name: loopback-volume
+          - name: data
             mountPath: /opt/local-path-provisioner
             mountPropagation: Bidirectional
       volumes:
-      - name: loopback-volume
+      - name: data
         hostPath:
           path: /opt/local-path-provisioner
           type: DirectoryOrCreate
