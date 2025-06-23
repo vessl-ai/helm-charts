@@ -18,6 +18,14 @@ _remove_xfs_quota() {
     } 9>/opt/vessl/xfs-quota-lock
 }
 
+_remove_quota() {
+    /bin/echo -e "\033[1;32mRemoving quota...\033[0m"
+    LOOPDEV=$(findmnt -n -o SOURCE --target "$VOL_DIR")
+    umount "$VOL_DIR"
+    losetup -d "$LOOPDEV"
+    rm -f /opt/local-path-provisioner/mydisk.img
+}
+
 _remove_dir() {
     /bin/echo -e "\033[1;32mRemoving directory:\033[0m ${VOL_DIR}"
     rm -rf "$VOL_DIR"
@@ -27,7 +35,7 @@ _remove_dir() {
 # MAIN STARTS HERE
 ##################
 
-_remove_xfs_quota
+_remove_quota
 _remove_dir
 
 /bin/echo -e "\033[1;32mTeardown complete!\033[0m"

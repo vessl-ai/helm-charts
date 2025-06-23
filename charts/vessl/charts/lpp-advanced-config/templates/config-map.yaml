@@ -22,38 +22,19 @@ data:
     spec:
       containers:
         - name: helper-pod
-          image: quay.io/vessl-ai/lpp-helper:v0.0.1
+          image: debian:stable-slim
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
           volumeMounts:
-          - name: xfs-quota-projects
-            mountPath: /etc/projects
-          - name: xfs-quota-projid
-            mountPath: /etc/projid
-          - name: xfs-quota-lock
-            mountPath: /opt/vessl/xfs-quota-lock
-          - name: device-dir
-            mountPath: /dev
-          env:
-            - name: XFS_QUOTA_SIZE
-              value: {{ .Values.xfs_quota.size | toString | toYaml }}
+          - name: loopback-volume
+            mountPath: /opt/local-path-provisioner
+            mountPropagation: Bidirectional
       volumes:
-      - name: xfs-quota-projects
+      - name: loopback-volume
         hostPath:
-          path: /etc/projects
-          type: FileOrCreate
-      - name: xfs-quota-projid
-        hostPath:
-          path: /etc/projid
-          type: FileOrCreate
-      - name: xfs-quota-lock
-        hostPath:
-          path: /opt/vessl/xfs-quota-lock
-          type: FileOrCreate
-      - name: device-dir
-        hostPath:
-          path: /dev
+          path: /opt/local-path-provisioner
+          type: DirectoryOrCreate
 
 {{- else }}
   setup: |-

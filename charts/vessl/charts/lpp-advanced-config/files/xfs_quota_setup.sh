@@ -29,19 +29,14 @@ _check_variables() {
     fi
 }
 
-_setup_xfs_quota() {
-    /bin/echo -e "\033[1;32mCreating project...\033[0m (ID: ${PROJ_ID}, name: ${PROJ_NAME})"
-
-    {
-        flock -w 30 9
-        /bin/echo "${PROJ_ID}:${VOL_DIR}" >> /etc/projects
-        /bin/echo "${PROJ_NAME}:${PROJ_ID}" >> /etc/projid
-
-        /bin/echo -e "\033[1;32mRunning xfs_quota commands...\033[0m"
-        xfs_quota -x -c "project -s ${PROJ_NAME}"
-        xfs_quota -x -c "limit -p bhard=${XFS_QUOTA_SIZE} ${PROJ_NAME}" "${XFS_NAME}"
-        xfs_quota -x -c "report -pbih" "${XFS_NAME}"
-    } 9>/opt/vessl/xfs-quota-lock
+_setup_quota() {
+    VOL_SIZE_MB=$((VOL_SIZE / 1024 / 1024))
+    dd if=/dev/zero of=/opt/local-path-provisioner/mydisk.img bs=1M count="${VOL_SIZE_MB}"
+    
+    LOOPDEV=$(losetup --find --show /opt/local-path-provisioner/mydisk.img)
+    losetup $LOOPDEV /opt/local-path-provisioner/mydisk.img
+    mkfs.ext4 $LOOPDEV
+    mount $LOOPDEV $VOL_DIR
 }
 
 ##################
@@ -50,6 +45,6 @@ _setup_xfs_quota() {
 
 _create_dir
 _check_variables
-_setup_xfs_quota
+_setup_quota
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"
