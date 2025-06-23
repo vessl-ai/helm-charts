@@ -30,11 +30,9 @@ _check_variables() {
 }
 
 _setup_quota() {
-    VOL_SIZE_MB=$((VOL_SIZE / 1024 / 1024))
-    dd if=/dev/zero of=/opt/local-path-provisioner/mydisk.img bs=1M count="${VOL_SIZE_MB}"
-    
-    LOOPDEV=$(losetup --find --show /opt/local-path-provisioner/mydisk.img)
-    losetup $LOOPDEV /opt/local-path-provisioner/mydisk.img
+    VOL_SIZE_MB=$((VOL_SIZE_BYTES / 1024 / 1024))
+    dd if=/dev/zero of=/opt/local-path-provisioner/${PROJ_NAME}.img bs=1M count="${VOL_SIZE_MB}"
+    LOOPDEV=$(losetup --find --show /opt/local-path-provisioner/${PROJ_NAME}.img)
     mkfs.ext4 $LOOPDEV
     mount $LOOPDEV $VOL_DIR
 }
