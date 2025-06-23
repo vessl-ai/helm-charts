@@ -10,30 +10,17 @@ _create_dir() {
     mkdir -m 0777 -p "$VOL_DIR"
 }
 
-_check_variables() {
-    /bin/echo -e "\033[1;32mChecking env vars...\033[0m"
-    if [ -z "${XFS_QUOTA_SIZE}" ]
-    then
-        /bin/echo -e "\033[1;31mThe shell variable 'XFS_QUOTA_SIZE' is not set!\033[0m"
-        /bin/echo -e "It is likely that something is wrong with the chart configuration."
-        /bin/echo -e "Defaulting to 10 GB."
-        XFS_QUOTA_SIZE=10g
-    fi
-
-    if ! echo "${XFS_QUOTA_SIZE}" | grep -q -E '^[1-9][0-9]*[kmg]?$'
-    then
-        /bin/echo -e "\033[1;31mThe shell variable 'XFS_QUOTA_SIZE' is invalid!\033[0m"
-        /bin/echo -e "It should contain an integer, optionally followed by suffixes: k, m, g."
-        /bin/echo -e "Ignoring its current value '${XFS_QUOTA_SIZE}', and defaulting to 10 GB."
-        XFS_QUOTA_SIZE=10g
-    fi
-}
-
 _setup_quota() {
+    /bin/echo -e "\033[1;32mSetting up quota...\033[0m"
     VOL_SIZE_MB=$((VOL_SIZE_BYTES / 1024 / 1024))
+    /bin/echo -e "\033[1;32mCreating image file\033[0m: /opt/local-path-provisioner/${PROJ_NAME}.img"
     dd if=/dev/zero of=/opt/local-path-provisioner/${PROJ_NAME}.img bs=1M count="${VOL_SIZE_MB}"
+    sync
+    /bin/echo -e "\033[1;32mAttaching image file to loopback device\033[0m"
     LOOPDEV=$(losetup --find --show /opt/local-path-provisioner/${PROJ_NAME}.img)
+    /bin/echo -e "\033[1;32mFormatting loopback device\033[0m"
     mkfs.ext4 $LOOPDEV
+    /bin/echo -e "\033[1;32mMounting loopback device to ${VOL_DIR}\033[0m"
     mount $LOOPDEV $VOL_DIR
 }
 
@@ -42,7 +29,6 @@ _setup_quota() {
 ##################
 
 _create_dir
-_check_variables
 _setup_quota
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"
