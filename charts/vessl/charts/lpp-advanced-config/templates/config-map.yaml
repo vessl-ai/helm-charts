@@ -30,11 +30,6 @@ data:
           - name: data
             mountPath: /opt/local-path-provisioner
             mountPropagation: Bidirectional
-      volumes:
-      - name: data
-        hostPath:
-          path: /opt/local-path-provisioner
-          type: DirectoryOrCreate
 
 {{- else }}
   setup: |-
