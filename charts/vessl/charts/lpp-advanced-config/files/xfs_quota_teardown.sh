@@ -10,6 +10,8 @@ _remove_quota() {
     umount "$VOL_DIR"
     losetup -d "$LOOPDEV"
     rm -f /opt/local-path-provisioner/${PROJ_NAME}.img
+
+    sed -i "\|${LOOPDEV}|d" /etc/fstab
 }
 
 _remove_dir() {

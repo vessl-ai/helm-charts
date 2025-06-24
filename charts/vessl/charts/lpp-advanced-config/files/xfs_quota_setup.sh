@@ -51,6 +51,8 @@ _setup_quota() {
     mkfs.ext4 $LOOPDEV
     /bin/echo -e "\033[1;32mMounting loopback device to ${VOL_DIR}\033[0m"
     mount $LOOPDEV $VOL_DIR
+
+    /bin/echo "${LOOPDEV}    ${VOL_DIR}    ext4    loop    0 0" >> /etc/fstab
 }
 
 ##################
