@@ -5,6 +5,8 @@ PROJ_NAME=$(basename "$VOL_DIR")
 XFS_NAME=$(dirname "$VOL_DIR")
 
 _remove_quota() {
+    set +e
+
     /bin/echo -e "\033[1;32mRemoving quota...\033[0m"
     LOOPDEV=$(findmnt -n -o SOURCE --target "$VOL_DIR")
     umount "$VOL_DIR"
@@ -12,6 +14,8 @@ _remove_quota() {
     rm -f /opt/local-path-provisioner/${PROJ_NAME}.img
 
     sed -i "\|${LOOPDEV}|d" /etc/fstab
+
+    set -e
 }
 
 _remove_dir() {
