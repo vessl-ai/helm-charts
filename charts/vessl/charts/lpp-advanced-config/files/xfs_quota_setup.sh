@@ -19,10 +19,8 @@ _check_disk_space() {
     /bin/echo "Disk Total: ${TOTAL_MB}MiB, Available: ${AVAIL_MB}MiB"
 
     MIN_FREE_MB=$(expr "$TOTAL_MB" / 4)
-    /bin/echo "Require at least 25% free: ${MIN_FREE_MB}MiB"
-
     ALLOC_MB=$(du --apparent-size -BM /opt/local-path-provisioner/*.img 2>/dev/null \
-      | awk '/total/ {print $1}' | sed 's/M//')
+      | awk '{gsub(/M/, "", $1); sum += $1} END {print sum}')
     [ -z "$ALLOC_MB" ] && ALLOC_MB=0
     /bin/echo "Already reserved: ${ALLOC_MB}MiB"
 
