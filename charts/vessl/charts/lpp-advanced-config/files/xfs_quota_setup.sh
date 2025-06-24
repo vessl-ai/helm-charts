@@ -5,6 +5,7 @@ PROJ_NAME=$(basename "$VOL_DIR")
 PROJ_ID=$(od -An -N4 -t u4 < /dev/urandom | tr -d ' ')
 XFS_NAME=$(dirname "$VOL_DIR")
 VOL_SIZE_MB=$((VOL_SIZE_BYTES / 1024 / 1024))
+IMAGE_FILE="/opt/local-path-provisioner/${PROJ_NAME}.img"
 
 _create_dir() {
     /bin/echo -e "\033[1;32mCreating directory\033[0m: ${VOL_DIR}"
@@ -42,17 +43,17 @@ _check_disk_space() {
 _setup_quota() {
     /bin/echo -e "\033[1;32mSetting up quota...\033[0m"
     
-    /bin/echo -e "\033[1;32mCreating image file\033[0m: /opt/local-path-provisioner/${PROJ_NAME}.img"
-    fallocate -l ${VOL_SIZE_MB}M /opt/local-path-provisioner/${PROJ_NAME}.img
+    /bin/echo -e "\033[1;32mCreating image file\033[0m: ${IMAGE_FILE}"
+    fallocate -l ${VOL_SIZE_MB}M ${IMAGE_FILE}
     sync
     /bin/echo -e "\033[1;32mAttaching image file to loopback device\033[0m"
-    LOOPDEV=$(losetup --find --show /opt/local-path-provisioner/${PROJ_NAME}.img)
+    LOOPDEV=$(losetup --find --show ${IMAGE_FILE})
     /bin/echo -e "\033[1;32mFormatting loopback device\033[0m"
     mkfs.ext4 $LOOPDEV
     /bin/echo -e "\033[1;32mMounting loopback device to ${VOL_DIR}\033[0m"
     mount $LOOPDEV $VOL_DIR
 
-    /bin/echo "${LOOPDEV}    ${VOL_DIR}    ext4    loop    0 0" >> /etc/fstab
+    /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
 }
 
 ##################
