@@ -32,7 +32,6 @@ data:
             mountPropagation: Bidirectional
           - name: fstab
             mountPath: /etc/fstab
-            readOnly: true
       volumes:
       - name: fstab
         hostPath:
