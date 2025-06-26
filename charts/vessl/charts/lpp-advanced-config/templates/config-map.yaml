@@ -7,7 +7,7 @@ data:
   config.json: |-
     {{- include "lpp_advanced_config.config_json_content" . | fromYaml | toPrettyJson | nindent 4 }}
 
-{{- if .Values.xfs_quota.enabled }}
+{{- if .Values.quota.enabled }}
   setup: |-
     {{- $.Files.Get "files/quota_setup.sh" | nindent 4 }}
 
