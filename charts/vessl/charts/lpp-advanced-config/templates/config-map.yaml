@@ -9,10 +9,10 @@ data:
 
 {{- if .Values.xfs_quota.enabled }}
   setup: |-
-    {{- $.Files.Get "files/xfs_quota_setup.sh" | nindent 4 }}
+    {{- $.Files.Get "files/quota_setup.sh" | nindent 4 }}
 
   teardown: |-
-    {{- $.Files.Get "files/xfs_quota_teardown.sh" | nindent 4 }}
+    {{- $.Files.Get "files/quota_teardown.sh" | nindent 4 }}
 
   helperPod.yaml: |-
     apiVersion: v1
