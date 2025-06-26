@@ -2,46 +2,49 @@
 set -e
 
 PROJ_NAME=$(basename "$VOL_DIR")
-PROJ_ID=$(od -An -N4 -t u4 < /dev/urandom | tr -d ' ')
-XFS_NAME=$(dirname "$VOL_DIR")
+VOL_SIZE_MB=$((VOL_SIZE_BYTES / 1024 / 1024))
+IMAGE_FILE="/opt/local-path-provisioner/${PROJ_NAME}.img"
 
 _create_dir() {
     /bin/echo -e "\033[1;32mCreating directory\033[0m: ${VOL_DIR}"
     mkdir -m 0777 -p "$VOL_DIR"
 }
 
-_check_variables() {
-    /bin/echo -e "\033[1;32mChecking env vars...\033[0m"
-    if [ -z "${XFS_QUOTA_SIZE}" ]
-    then
-        /bin/echo -e "\033[1;31mThe shell variable 'XFS_QUOTA_SIZE' is not set!\033[0m"
-        /bin/echo -e "It is likely that something is wrong with the chart configuration."
-        /bin/echo -e "Defaulting to 10 GB."
-        XFS_QUOTA_SIZE=10g
-    fi
+_check_disk_space() {
+    # Get total and available disk space in MiB
+    OUTPUT=$(df --output=size,avail --block-size=1M "$VOL_DIR" | tail -n1)
+    TOTAL_MB=$(echo "$OUTPUT" | awk '{print $1}')
+    AVAIL_MB=$(echo "$OUTPUT" | awk '{print $2}')
+    /bin/echo "Disk Total: ${TOTAL_MB}MiB, Available: ${AVAIL_MB}MiB"
 
-    if ! echo "${XFS_QUOTA_SIZE}" | grep -q -E '^[1-9][0-9]*[kmg]?$'
-    then
-        /bin/echo -e "\033[1;31mThe shell variable 'XFS_QUOTA_SIZE' is invalid!\033[0m"
-        /bin/echo -e "It should contain an integer, optionally followed by suffixes: k, m, g."
-        /bin/echo -e "Ignoring its current value '${XFS_QUOTA_SIZE}', and defaulting to 10 GB."
-        XFS_QUOTA_SIZE=10g
+    # Calculate max allocation as 70% of total disk space
+    MAX_ALLOC_MB=$(( TOTAL_MB * 70 / 100 ))
+    /bin/echo "Max allocation: ${MAX_ALLOC_MB}MiB, At least 30% of the disk must be free"
+
+    # Get total reserved space in MiB
+    ALLOC_MB=$(du --apparent-size -BM /opt/local-path-provisioner/*.img 2>/dev/null \
+      | awk '{gsub(/M/, "", $1); sum += $1} END {print sum}')
+    [ -z "$ALLOC_MB" ] && ALLOC_MB=0
+    /bin/echo "Already reserved: ${ALLOC_MB}MiB"
+
+    # Calculate total requested space after allocation
+    TOTAL_REQUESTED_MB=$(expr "$ALLOC_MB" + "$VOL_SIZE_MB")
+    /bin/echo "Total after allocation: ${TOTAL_REQUESTED_MB}MiB"
+
+    # Check if total requested space exceeds max allocation
+    if [ "$TOTAL_REQUESTED_MB" -gt "$MAX_ALLOC_MB" ]; then
+        /bin/echo -e "\033[1;31mError: Total reservation (${TOTAL_REQUESTED_MB}MiB) exceeds disk (${MAX_ALLOC_MB}MiB)\033[0m"
+        exit 1
     fi
 }
 
-_setup_xfs_quota() {
-    /bin/echo -e "\033[1;32mCreating project...\033[0m (ID: ${PROJ_ID}, name: ${PROJ_NAME})"
-
-    {
-        flock -w 30 9
-        /bin/echo "${PROJ_ID}:${VOL_DIR}" >> /etc/projects
-        /bin/echo "${PROJ_NAME}:${PROJ_ID}" >> /etc/projid
-
-        /bin/echo -e "\033[1;32mRunning xfs_quota commands...\033[0m"
-        xfs_quota -x -c "project -s ${PROJ_NAME}"
-        xfs_quota -x -c "limit -p bhard=${XFS_QUOTA_SIZE} ${PROJ_NAME}" "${XFS_NAME}"
-        xfs_quota -x -c "report -pbih" "${XFS_NAME}"
-    } 9>/opt/vessl/xfs-quota-lock
+_setup_quota() {
+    /bin/echo -e "\033[1;32mSetting up quota...\033[0m"
+    fallocate -l ${VOL_SIZE_MB}M ${IMAGE_FILE}
+    mkfs.ext4 ${IMAGE_FILE}
+    /bin/echo -e "\033[1;32mMounting image file to ${VOL_DIR}\033[0m"
+    mount -o loop ${IMAGE_FILE} ${VOL_DIR}
+    /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
 }
 
 ##################
@@ -49,7 +52,7 @@ _setup_xfs_quota() {
 ##################
 
 _create_dir
-_check_variables
-_setup_xfs_quota
+_check_disk_space
+_setup_quota
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"
