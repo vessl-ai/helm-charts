@@ -427,8 +427,9 @@ nginx-ingress:
 
 lpp-advanced-config:
   enabled: false
-  quota:
+  xfs_quota:
     enabled: true
+    size: 10g
 
 # https://github.com/longhorn/longhorn/tree/master/chart
 longhorn:
