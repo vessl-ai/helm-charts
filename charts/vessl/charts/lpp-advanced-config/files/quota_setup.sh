@@ -4,6 +4,7 @@ set -e
 PROJ_NAME=$(basename "$VOL_DIR")
 VOL_SIZE_MB=$((VOL_SIZE_BYTES / 1024 / 1024))
 IMAGE_FILE="${VOL_DIR_PARENT}/${PROJ_NAME}.img"
+LOCK_FILE="${VOL_DIR_PARENT}/lock"
 
 # Track what has been created for rollback
 DIR_CREATED=false
@@ -91,8 +92,18 @@ _setup_quota() {
     
     # Mount the image
     /bin/echo -e "\033[1;32mMounting image file to ${VOL_DIR}\033[0m"
+
+    # Wait for lock file to be released to avoid race condition in mount
+    touch "${LOCK_FILE}"
+    exec 200>${LOCK_FILE}
+    flock -x 200
+
     mount -o loop ${IMAGE_FILE} ${VOL_DIR}
     MOUNTED=true
+
+    # Release lock
+    flock -u 200
+    exec 200>&-
     
     # Add to fstab
     /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
