@@ -7,12 +7,12 @@ data:
   config.json: |-
     {{- include "lpp_advanced_config.config_json_content" . | fromYaml | toPrettyJson | nindent 4 }}
 
-{{- if .Values.xfs_quota.enabled }}
+{{- if .Values.quota.enabled }}
   setup: |-
-    {{- $.Files.Get "files/xfs_quota_setup.sh" | nindent 4 }}
+    {{- $.Files.Get "files/quota_setup.sh" | nindent 4 }}
 
   teardown: |-
-    {{- $.Files.Get "files/xfs_quota_teardown.sh" | nindent 4 }}
+    {{- $.Files.Get "files/quota_teardown.sh" | nindent 4 }}
 
   helperPod.yaml: |-
     apiVersion: v1
@@ -22,38 +22,24 @@ data:
     spec:
       containers:
         - name: helper-pod
-          image: quay.io/vessl-ai/lpp-helper:v0.0.1
+          image: debian:stable-slim
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: true
           volumeMounts:
-          - name: xfs-quota-projects
-            mountPath: /etc/projects
-          - name: xfs-quota-projid
-            mountPath: /etc/projid
-          - name: xfs-quota-lock
-            mountPath: /opt/vessl/xfs-quota-lock
-          - name: device-dir
-            mountPath: /dev
-          env:
-            - name: XFS_QUOTA_SIZE
-              value: {{ .Values.xfs_quota.size | toString | toYaml }}
+          - name: data
+            mountPath: {{ .Values.path.default }}
+            mountPropagation: Bidirectional
+          - name: fstab
+            mountPath: /etc/fstab
+        env:
+        - name: VOL_DIR_PARENT
+          value: {{ .Values.path.default }}
       volumes:
-      - name: xfs-quota-projects
+      - name: fstab
         hostPath:
-          path: /etc/projects
+          path: /etc/fstab
           type: FileOrCreate
-      - name: xfs-quota-projid
-        hostPath:
-          path: /etc/projid
-          type: FileOrCreate
-      - name: xfs-quota-lock
-        hostPath:
-          path: /opt/vessl/xfs-quota-lock
-          type: FileOrCreate
-      - name: device-dir
-        hostPath:
-          path: /dev
 
 {{- else }}
   setup: |-
