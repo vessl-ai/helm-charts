@@ -8,8 +8,7 @@ _remove_quota() {
     set +e
 
     /bin/echo -e "\033[1;32mRemoving quota...\033[0m"
-    umount "$VOL_DIR"
-    losetup -d "$IMAGE_FILE"
+    umount -d "$VOL_DIR"
     rm -f "$IMAGE_FILE"
     sed -i "\|${IMAGE_FILE}|d" /etc/fstab
 
