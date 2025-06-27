@@ -28,10 +28,13 @@ data:
             privileged: true
           volumeMounts:
           - name: data
-            mountPath: /opt/local-path-provisioner
+            mountPath: {{ .Values.path.default }}
             mountPropagation: Bidirectional
           - name: fstab
             mountPath: /etc/fstab
+        env:
+        - name: VOL_DIR_PARENT
+          value: {{ .Values.path.default }}
       volumes:
       - name: fstab
         hostPath:

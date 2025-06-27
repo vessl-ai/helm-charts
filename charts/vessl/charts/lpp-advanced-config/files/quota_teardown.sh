@@ -2,7 +2,7 @@
 set -eu
 
 PROJ_NAME=$(basename "$VOL_DIR")
-IMAGE_FILE="/opt/local-path-provisioner/${PROJ_NAME}.img"
+IMAGE_FILE="${VOL_DIR_PARENT}/${PROJ_NAME}.img"
 
 _remove_quota() {
     set +e

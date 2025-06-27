@@ -3,7 +3,7 @@ set -e
 
 PROJ_NAME=$(basename "$VOL_DIR")
 VOL_SIZE_MB=$((VOL_SIZE_BYTES / 1024 / 1024))
-IMAGE_FILE="/opt/local-path-provisioner/${PROJ_NAME}.img"
+IMAGE_FILE="${VOL_DIR_PARENT}/${PROJ_NAME}.img"
 
 _create_dir() {
     /bin/echo -e "\033[1;32mCreating directory\033[0m: ${VOL_DIR}"
@@ -22,7 +22,7 @@ _check_disk_space() {
     /bin/echo "Max allocation: ${MAX_ALLOC_MB}MiB, At least 30% of the disk must be free"
 
     # Get total reserved space in MiB
-    ALLOC_MB=$(du --apparent-size -BM /opt/local-path-provisioner/*.img 2>/dev/null \
+    ALLOC_MB=$(du --apparent-size -BM ${VOL_DIR_PARENT}/*.img 2>/dev/null \
       | awk '{gsub(/M/, "", $1); sum += $1} END {print sum}')
     [ -z "$ALLOC_MB" ] && ALLOC_MB=0
     /bin/echo "Already reserved: ${ALLOC_MB}MiB"
