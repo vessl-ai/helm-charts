@@ -6,6 +6,5 @@ path:
   #  - node_name: n01
   #    path: /mnt/data
 
-xfs_quota:
+quota:
   enabled: true
-  size: 10g
