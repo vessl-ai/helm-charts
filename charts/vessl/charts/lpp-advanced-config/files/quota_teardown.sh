@@ -11,6 +11,7 @@ _remove_quota() {
     umount "$VOL_DIR"
     losetup -d "$IMAGE_FILE"
     rm -f "$IMAGE_FILE"
+    sed -i "\|${IMAGE_FILE}|d" /etc/fstab
 
     set -e
 }
