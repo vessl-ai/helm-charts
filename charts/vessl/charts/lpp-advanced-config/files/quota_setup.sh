@@ -1,15 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 PROJ_NAME=$(basename "$VOL_DIR")
 VOL_SIZE_MB=$((VOL_SIZE_BYTES / 1024 / 1024))
 IMAGE_FILE="${VOL_DIR_PARENT}/${PROJ_NAME}.img"
+LOCK_FILE="${VOL_DIR_PARENT}/lock"
 
 # Track what has been created for rollback
 DIR_CREATED=false
 IMAGE_CREATED=false
 MOUNTED=false
 FSTAB_UPDATED=false
+LOCK_CREATED=false
 
 _cleanup() {
     /bin/echo -e "\033[1;33mRolling back changes...\033[0m"
@@ -37,13 +39,18 @@ _cleanup() {
         /bin/echo "Removing directory ${VOL_DIR}"
         rm -rf "$VOL_DIR" 2>/dev/null || true
     fi
+
+    if [ "$LOCK_CREATED" = true ]; then
+        /bin/echo "Removing lock file ${LOCK_FILE}"
+        rm -f "$LOCK_FILE" 2>/dev/null || true
+    fi
     
     /bin/echo -e "\033[1;33mRollback complete\033[0m"
     exit 1
 }
 
 # Set up trap to call cleanup on any error
-trap _cleanup ERR
+trap _cleanup EXIT
 
 _create_dir() {
     /bin/echo -e "\033[1;32mCreating directory\033[0m: ${VOL_DIR}"
@@ -91,12 +98,25 @@ _setup_quota() {
     
     # Mount the image
     /bin/echo -e "\033[1;32mMounting image file to ${VOL_DIR}\033[0m"
-    mount -o loop ${IMAGE_FILE} ${VOL_DIR}
-    MOUNTED=true
-    
-    # Add to fstab
-    /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
-    FSTAB_UPDATED=true
+
+    # Simple file-based locking to avoid race condition in mount
+    # Wait for lock file to be released
+    while [ -f "${LOCK_FILE}" ]; do
+        sleep 1
+    done
+
+    (
+        if ! flock -e 200 -w 10; then
+            echo "Failed to acquire lock"
+            exit 1
+        fi
+
+        mount -o loop ${IMAGE_FILE} ${VOL_DIR}
+        MOUNTED=true
+
+        /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
+        FSTAB_UPDATED=true
+    ) 200>${LOCK_FILE}
 }
 
 ##################
@@ -108,6 +128,6 @@ _check_disk_space
 _setup_quota
 
 # Remove trap since we succeeded
-trap - ERR
+trap - EXIT
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"
