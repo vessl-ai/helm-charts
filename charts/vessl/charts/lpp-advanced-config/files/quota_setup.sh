@@ -11,6 +11,7 @@ DIR_CREATED=false
 IMAGE_CREATED=false
 MOUNTED=false
 FSTAB_UPDATED=false
+LOCK_CREATED=false
 
 _cleanup() {
     /bin/echo -e "\033[1;33mRolling back changes...\033[0m"
@@ -37,6 +38,11 @@ _cleanup() {
     if [ "$DIR_CREATED" = true ]; then
         /bin/echo "Removing directory ${VOL_DIR}"
         rm -rf "$VOL_DIR" 2>/dev/null || true
+    fi
+
+    if [ "$LOCK_CREATED" = true ]; then
+        /bin/echo "Removing lock file ${LOCK_FILE}"
+        rm -f "$LOCK_FILE" 2>/dev/null || true
     fi
     
     /bin/echo -e "\033[1;33mRollback complete\033[0m"
@@ -98,19 +104,15 @@ _setup_quota() {
     while [ -f "${LOCK_FILE}" ]; do
         sleep 1
     done
-    
-    # Create lock file
-    touch "${LOCK_FILE}"
 
-    mount -o loop ${IMAGE_FILE} ${VOL_DIR}
-    MOUNTED=true
+    (
+        flock -e 200 -w 10 || { echo "Failed to acquire lock"; exit 1; }
+        mount -o loop ${IMAGE_FILE} ${VOL_DIR}
+        MOUNTED=true
 
-    # Release lock
-    rm -f "${LOCK_FILE}"
-    
-    # Add to fstab
-    /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
-    FSTAB_UPDATED=true
+        /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
+        FSTAB_UPDATED=true
+    ) 200>${LOCK_FILE}
 }
 
 ##################
