@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 PROJ_NAME=$(basename "$VOL_DIR")
@@ -44,7 +44,7 @@ _cleanup() {
 }
 
 # Set up trap to call cleanup on any error
-trap _cleanup ERR
+trap _cleanup EXIT
 
 _create_dir() {
     /bin/echo -e "\033[1;32mCreating directory\033[0m: ${VOL_DIR}"
@@ -93,17 +93,20 @@ _setup_quota() {
     # Mount the image
     /bin/echo -e "\033[1;32mMounting image file to ${VOL_DIR}\033[0m"
 
-    # Wait for lock file to be released to avoid race condition in mount
+    # Simple file-based locking to avoid race condition in mount
+    # Wait for lock file to be released
+    while [ -f "${LOCK_FILE}" ]; do
+        sleep 1
+    done
+    
+    # Create lock file
     touch "${LOCK_FILE}"
-    exec 200>${LOCK_FILE}
-    flock -x 200
 
     mount -o loop ${IMAGE_FILE} ${VOL_DIR}
     MOUNTED=true
 
     # Release lock
-    flock -u 200
-    exec 200>&-
+    rm -f "${LOCK_FILE}"
     
     # Add to fstab
     /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
@@ -119,6 +122,6 @@ _check_disk_space
 _setup_quota
 
 # Remove trap since we succeeded
-trap - ERR
+trap - EXIT
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"
