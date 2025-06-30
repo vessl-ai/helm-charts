@@ -106,7 +106,11 @@ _setup_quota() {
     done
 
     (
-        flock -e 200 -w 10 || { echo "Failed to acquire lock"; exit 1; }
+        if ! flock -e 200 -w 10; then
+            echo "Failed to acquire lock"
+            exit 1
+        fi
+
         mount -o loop ${IMAGE_FILE} ${VOL_DIR}
         MOUNTED=true
 

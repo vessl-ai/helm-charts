@@ -9,9 +9,12 @@ _remove_quota() {
     /bin/echo -e "\033[1;32mRemoving quota...\033[0m"
     umount -d "$VOL_DIR"
     rm -f "$IMAGE_FILE"
-
+    
     (
-        flock -e 200 -w 10 || { echo "Failed to acquire lock"; exit 1; }
+        if ! flock -e 200 -w 10; then
+            echo "Failed to acquire lock"
+            exit 1
+        fi
         sed -i "\|${IMAGE_FILE}|d" /etc/fstab
     ) 200>${LOCK_FILE}
 }
