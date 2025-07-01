@@ -45,7 +45,7 @@ _cleanup() {
 }
 
 # Set up trap to call cleanup on any error
-trap _cleanup ERR
+trap _cleanup EXIT
 
 _create_dir() {
     /bin/echo -e "\033[1;32mCreating directory\033[0m: ${VOL_DIR}"
@@ -112,6 +112,6 @@ _check_disk_space
 _setup_quota
 
 # Remove trap since we succeeded
-trap - ERR
+trap - EXIT
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"
