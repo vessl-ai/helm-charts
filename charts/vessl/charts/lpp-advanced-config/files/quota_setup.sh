@@ -23,7 +23,9 @@ _cleanup() {
     # Remove from fstab if added
     if [ "$FSTAB_UPDATED" = true ]; then
         /bin/echo "Removing entry from /etc/fstab"
-        sed -i "\|${IMAGE_FILE}|d" /etc/fstab 2>/dev/null || true
+        flock -w 10 -e 200 -c "
+            /bin/echo \"\$(sed \"/${PROJ_NAME}/d\" /etc/fstab)\" > /etc/fstab
+        "
     fi
     
     # Remove image file if created
@@ -91,12 +93,14 @@ _setup_quota() {
     
     # Mount the image
     /bin/echo -e "\033[1;32mMounting image file to ${VOL_DIR}\033[0m"
-    mount -o loop ${IMAGE_FILE} ${VOL_DIR}
-    MOUNTED=true
-    
-    # Add to fstab
-    /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
-    FSTAB_UPDATED=true
+
+    flock -w 10 -e 200 -c "
+        mount -o loop ${IMAGE_FILE} ${VOL_DIR}
+        MOUNTED=true
+
+        /bin/echo \"${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0\" >> /etc/fstab
+        FSTAB_UPDATED=true
+    "
 }
 
 ##################
