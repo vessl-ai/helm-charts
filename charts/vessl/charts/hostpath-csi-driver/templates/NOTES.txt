@@ -1,0 +1,35 @@
+1. CSI Driver has been installed successfully!
+
+2. Available StorageClasses:
+{{- if .Values.storageClass.vessl-hostpath-device.enabled }}
+   - {{ .Values.storageClass.vessl-hostpath-device.name }} (vessl-hostpath-device storage)
+{{- end }}
+
+3. To use the CSI driver, create a PersistentVolumeClaim:
+   apiVersion: v1
+   kind: PersistentVolumeClaim
+   metadata:
+     name: my-pvc
+   spec:
+     accessModes:
+       - ReadWriteOnce
+     storageClassName: {{ .Values.storageClass.vessl-hostpath-device.name }}
+     resources:
+       requests:
+         storage: 1Gi
+
+4. Check CSI driver status:
+   kubectl get pods -l app.kubernetes.io/name={{ include "hostpath-csi-driver.name" . }}
+
+5. View CSI driver logs:
+   kubectl logs -l app.kubernetes.io/name={{ include "hostpath-csi-driver.name" . }} -c custom-csi-driver
+
+{{- if .Values.statefulSet.enabled }}
+6. Testing with socat (NodePort service):
+   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "hostpath-csi-driver.fullname" . }}-socat-service)
+   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+   echo "CSI socket exposed at: $NODE_IP:$NODE_PORT"
+{{- end }}
+
+7. For more information, visit:
+   https://kubernetes.io/docs/concepts/storage/volumes/#csi
