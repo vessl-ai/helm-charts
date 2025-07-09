@@ -116,6 +116,7 @@ spec:
           args:
             {{- toYaml .Values.daemonSet.customCsiDriver.args | nindent 12 }}
             - "--statedir={{ .Values.global.kubeletPath }}/csi-hostpath-data"
+            - "--drivername={{ .Values.global.driverName }}"
           env:
             {{- toYaml .Values.daemonSet.customCsiDriver.env | nindent 12 }}
           {{- with .Values.daemonSet.customCsiDriver.securityContext }}
