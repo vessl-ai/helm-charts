@@ -1,0 +1,30 @@
+{{- if .Values.storageClass.enabled }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storageClass.vessl-hostpath-device.name }}
+  labels:
+    {{- include "hostpath-csi-driver.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storageclass
+    storage-class: hostpath
+  {{- with .Values.storageClass.vessl-hostpath-device.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.storageClass.vessl-hostpath-device.labels }}
+  labels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+provisioner: {{ .Values.global.driverName }}
+volumeBindingMode: {{ .Values.storageClass.vessl-hostpath-device.volumeBindingMode }}
+{{- with .Values.storageClass.vessl-hostpath-device.parameters }}
+parameters:
+  {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- if .Values.storageClass.vessl-hostpath-device.allowVolumeExpansion }}
+allowVolumeExpansion: {{ .Values.storageClass.vessl-hostpath-device.allowVolumeExpansion }}
+{{- end }}
+{{- if .Values.storageClass.vessl-hostpath-device.reclaimPolicy }}
+reclaimPolicy: {{ .Values.storageClass.vessl-hostpath-device.reclaimPolicy }}
+{{- end }}
+{{- end }}

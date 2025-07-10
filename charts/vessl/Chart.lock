@@ -38,5 +38,8 @@ dependencies:
 - name: nginx-ingress
   repository: https://helm.nginx.com/stable
   version: 2.0.1
-digest: sha256:622816f0fc0ce258c42011f8924251c0d80a18b2eecba0e7b48265ee2bd542e9
-generated: "2025-03-06T15:25:48.729023+09:00"
+- name: hostpath-csi-driver
+  repository: ""
+  version: 0.1.0
+digest: sha256:dca1e95686882276cccd80aa072a6508074757f1119f198d43e22e0244fa35c3
+generated: "2025-07-10T11:44:54.344231+09:00"
