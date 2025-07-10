@@ -24,12 +24,5 @@
 5. View CSI driver logs:
    kubectl logs -l app.kubernetes.io/name={{ include "hostpath-csi-driver.name" . }} -c custom-csi-driver
 
-{{- if .Values.statefulSet.enabled }}
-6. Testing with socat (NodePort service):
-   export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "hostpath-csi-driver.fullname" . }}-socat-service)
-   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-   echo "CSI socket exposed at: $NODE_IP:$NODE_PORT"
-{{- end }}
-
-7. For more information, visit:
+6. For more information, visit:
    https://kubernetes.io/docs/concepts/storage/volumes/#csi
