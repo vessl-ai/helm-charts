@@ -60,7 +60,7 @@ daemonSet:
     enabled: true
     image:
       repository: "quay.io/vessl-ai/hostpathplugin"
-      tag: "0.0.1"
+      tag: "0.0.2"
       pullPolicy: IfNotPresent
     args:
       - "--v=5"
