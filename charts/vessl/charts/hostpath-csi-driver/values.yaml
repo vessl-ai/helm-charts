@@ -105,7 +105,7 @@ daemonSet:
 # StorageClass configuration
 storageClass:
   enabled: true
-  vessl-hostpath-device:
+  vesslHostpathDevice:
     enabled: true
     name: "vessl-hostpath"
     volumeBindingMode: WaitForFirstConsumer
