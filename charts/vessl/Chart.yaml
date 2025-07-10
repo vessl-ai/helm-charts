@@ -55,3 +55,6 @@ dependencies:
   version: "2.0.1"
   condition: nginx-ingress.enabled
   repository: https://helm.nginx.com/stable
+- name: hostpath-csi-driver
+  version: "0.1.0"
+  condition: hostpath-csi-driver.enabled
