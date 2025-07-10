@@ -17,7 +17,6 @@ csiDriver:
 
 # DaemonSet configuration
 daemonSet:
-  enabled: true
   serviceAccountName: "vessl-csi-provisioner"
   
   # CSI Provisioner container
@@ -64,7 +63,7 @@ daemonSet:
       tag: "0.0.1"
       pullPolicy: IfNotPresent
     args:
-      - "--v=7"
+      - "--v=5"
       - "--endpoint=$(CSI_ENDPOINT)"
       - "--nodeid=$(KUBE_NODE_NAME)"
       # - "--statedir="  # Will be set in template using global.kubeletPath
@@ -77,8 +76,6 @@ daemonSet:
           fieldRef:
             apiVersion: v1
             fieldPath: spec.nodeName
-    securityContext:
-      privileged: true
     ports:
       - containerPort: 9898
         name: healthz
@@ -103,28 +100,6 @@ daemonSet:
     args:
       - "--csi-address=/csi/csi.sock"
       - "--health-port=9898"
-    resources: {}
-
-# StatefulSet configuration (for testing purposes)
-statefulSet:
-  enabled: false  # Disabled by default for production
-  # Service configuration
-  service:
-    type: NodePort
-    port: 10000 # if you want to change this, you need to change socat's port too
-  # Socat container
-  socat:
-    image:
-      repository: "quay.io/vessl-ai/hostpathplugin"
-      tag: "0.0.1"
-      pullPolicy: IfNotPresent
-    command:
-      - "socat"
-    args:
-      - "tcp-listen:10000,fork,reuseaddr"
-      - "unix-connect:/csi/csi.sock"
-    securityContext:
-      privileged: true
     resources: {}
 
 # StorageClass configuration

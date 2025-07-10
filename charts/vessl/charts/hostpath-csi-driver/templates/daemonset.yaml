@@ -1,4 +1,3 @@
-{{- if .Values.daemonSet.enabled }}
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
@@ -119,10 +118,8 @@ spec:
             - "--drivername={{ .Values.global.driverName }}"
           env:
             {{- toYaml .Values.daemonSet.customCsiDriver.env | nindent 12 }}
-          {{- with .Values.daemonSet.customCsiDriver.securityContext }}
           securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            privileged: true
           {{- with .Values.daemonSet.customCsiDriver.ports }}
           ports:
             {{- toYaml . | nindent 12 }}
@@ -201,4 +198,3 @@ spec:
             path: {{ .Values.volumes.sysDir.hostPath }}
             type: {{ .Values.volumes.sysDir.type }}
           name: sys
-{{- end }}
