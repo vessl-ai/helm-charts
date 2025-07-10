@@ -51,3 +51,6 @@ dependencies:
   version: "v24.9.2"
   condition: gpu-operator.enabled
   repository: https://nvidia.github.io/gpu-operator
+- name: hostpath-csi-driver
+  version: "0.1.0"
+  condition: hostpath-csi-driver.enabled

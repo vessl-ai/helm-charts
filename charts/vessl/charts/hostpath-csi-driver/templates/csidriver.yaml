@@ -1,0 +1,22 @@
+{{- if .Values.csiDriver.enabled }}
+apiVersion: storage.k8s.io/v1
+kind: CSIDriver
+metadata:
+  name: {{ .Values.global.driverName }}
+  labels:
+    {{- include "hostpath-csi-driver.labels" . | nindent 4 }}
+    app.kubernetes.io/component: csi-driver
+spec:
+  # Supports persistent and ephemeral inline volumes.
+  volumeLifecycleModes:
+    {{- toYaml .Values.csiDriver.volumeLifecycleModes | nindent 4 }}
+  # To determine at runtime which mode a volume uses, pod info and its
+  # "csi.storage.k8s.io/ephemeral" entry are needed.
+  podInfoOnMount: {{ .Values.csiDriver.podInfoOnMount }}
+  # No attacher needed.
+  attachRequired: {{ .Values.csiDriver.attachRequired }}
+  storageCapacity: {{ .Values.csiDriver.storageCapacity }}
+  # Kubernetes may use fsGroup to change permissions and ownership
+  # of the volume to match user requested fsGroup in the pod's SecurityPolicy
+  fsGroupPolicy: {{ .Values.csiDriver.fsGroupPolicy }}
+{{- end }}

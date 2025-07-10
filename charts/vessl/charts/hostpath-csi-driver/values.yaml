@@ -1,0 +1,179 @@
+
+# Global settings
+global:
+  driverName: "vessl.hostpath.csi.k8s.io"
+  kubeletPath: "/var/lib/kubelet"
+
+# CSI Driver configuration
+csiDriver:
+  enabled: true
+  volumeLifecycleModes:
+    - Persistent
+    - Ephemeral
+  podInfoOnMount: true
+  attachRequired: false
+  storageCapacity: true
+  fsGroupPolicy: File
+
+# DaemonSet configuration
+daemonSet:
+  serviceAccountName: "vessl-csi-provisioner"
+  
+  # CSI Provisioner container
+  csiProvisioner:
+    enabled: true
+    image:
+      repository: "registry.k8s.io/sig-storage/csi-provisioner"
+      tag: "v5.2.0"
+      pullPolicy: IfNotPresent
+    args:
+      - "-v=5"
+      - "--csi-address=/csi/csi.sock"
+      - "--feature-gates=Topology=true"
+      - "--enable-capacity"
+      - "--capacity-ownerref-level=0"
+      - "--node-deployment=true"
+      - "--strict-topology=true"
+      - "--immediate-topology=false"
+      - "--worker-threads=5"
+    securityContext:
+      privileged: true
+    resources: {}
+  
+  # Node Driver Registrar container
+  nodeDriverRegistrar:
+    enabled: true
+    image:
+      repository: "registry.k8s.io/sig-storage/csi-node-driver-registrar"
+      tag: "v2.12.0"
+      pullPolicy: IfNotPresent
+    args:
+      - "--v=5"
+      - "--csi-address=/csi/csi.sock"
+      # - "--kubelet-registration-path="  # Will be set in template using global.kubeletPath
+    securityContext:
+      privileged: true
+    resources: {}
+  
+  # Custom CSI Driver container
+  customCsiDriver:
+    enabled: true
+    image:
+      repository: "quay.io/vessl-ai/hostpathplugin"
+      tag: "0.0.1"
+      pullPolicy: IfNotPresent
+    args:
+      - "--v=5"
+      - "--endpoint=$(CSI_ENDPOINT)"
+      - "--nodeid=$(KUBE_NODE_NAME)"
+      # - "--statedir="  # Will be set in template using global.kubeletPath
+      # - "--drivername={{ .Values.global.driverName }}"
+    env:
+      - name: CSI_ENDPOINT
+        value: "unix:///csi/csi.sock"
+      - name: KUBE_NODE_NAME
+        valueFrom:
+          fieldRef:
+            apiVersion: v1
+            fieldPath: spec.nodeName
+    ports:
+      - containerPort: 9898
+        name: healthz
+        protocol: TCP
+    livenessProbe:
+      failureThreshold: 5
+      httpGet:
+        path: /healthz
+        port: healthz
+      initialDelaySeconds: 10
+      timeoutSeconds: 3
+      periodSeconds: 2
+    resources: {}
+  
+  # Liveness Probe container
+  livenessProbe:
+    enabled: true
+    image:
+      repository: "registry.k8s.io/sig-storage/livenessprobe"
+      tag: "v2.15.0"
+      pullPolicy: IfNotPresent
+    args:
+      - "--csi-address=/csi/csi.sock"
+      - "--health-port=9898"
+    resources: {}
+
+# StorageClass configuration
+storageClass:
+  enabled: true
+  vessl-hostpath-device:
+    enabled: true
+    name: "vessl-hostpath"
+    volumeBindingMode: WaitForFirstConsumer
+    annotations: {}
+    labels: {}
+    allowVolumeExpansion: false
+    reclaimPolicy: Delete
+
+# Volume paths configuration
+volumes:
+  # Socket directory
+  socketDir:
+    type: DirectoryOrCreate
+  
+  # Kubelet directory
+  kubeletDir:
+    type: Directory
+  
+  # Registration directory
+  registrationDir:
+    type: Directory
+  
+  # CSI data directory
+  csiDataDir:
+    type: DirectoryOrCreate
+  
+  # System directories
+  devDir:
+    hostPath: "/dev"
+    type: Directory
+  
+  fstab:
+    hostPath: "/etc/fstab"
+    type: File
+  
+  procDir:
+    hostPath: "/proc"
+    type: Directory
+  
+  sysDir:
+    hostPath: "/sys"
+    type: Directory
+
+# Labels and annotations
+labels: {}
+annotations: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Pod security context
+podSecurityContext: {}
+
+# Container security context
+securityContext: {}
+
+# Image pull secrets
+imagePullSecrets: []
+
+# Service account
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+  automountServiceAccountToken: true
