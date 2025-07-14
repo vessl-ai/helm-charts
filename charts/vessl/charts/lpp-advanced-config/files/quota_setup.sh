@@ -23,9 +23,7 @@ _cleanup() {
     # Remove from fstab if added
     if [ "$FSTAB_UPDATED" = true ]; then
         /bin/echo "Removing entry from /etc/fstab"
-        flock -w 10 -e 200 -c "
-            /bin/echo \"\$(sed \"/${PROJ_NAME}/d\" /etc/fstab)\" > /etc/fstab
-        "
+        sed -i "\|${IMAGE_FILE}|d" /etc/fstab 2>/dev/null || true
     fi
     
     # Remove image file if created
@@ -45,7 +43,7 @@ _cleanup() {
 }
 
 # Set up trap to call cleanup on any error
-trap _cleanup EXIT
+trap _cleanup ERR
 
 _create_dir() {
     /bin/echo -e "\033[1;32mCreating directory\033[0m: ${VOL_DIR}"
@@ -93,14 +91,12 @@ _setup_quota() {
     
     # Mount the image
     /bin/echo -e "\033[1;32mMounting image file to ${VOL_DIR}\033[0m"
-
-    flock -w 10 -e 200 -c "
-        mount -o loop ${IMAGE_FILE} ${VOL_DIR}
-        MOUNTED=true
-
-        /bin/echo \"${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0\" >> /etc/fstab
-        FSTAB_UPDATED=true
-    "
+    mount -o loop ${IMAGE_FILE} ${VOL_DIR}
+    MOUNTED=true
+    
+    # Add to fstab
+    /bin/echo "${IMAGE_FILE}    ${VOL_DIR}    ext4    defaults,loop,nofail    0 0" >> /etc/fstab
+    FSTAB_UPDATED=true
 }
 
 ##################
@@ -112,6 +108,6 @@ _check_disk_space
 _setup_quota
 
 # Remove trap since we succeeded
-trap - EXIT
+trap - ERR
 
 /bin/echo -e "\033[1;32mSetup complete!\033[0m"

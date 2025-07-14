@@ -6,12 +6,9 @@ IMAGE_FILE="${VOL_DIR_PARENT}/${PROJ_NAME}.img"
 
 _remove_quota() {
     /bin/echo -e "\033[1;32mRemoving quota...\033[0m"
-    umount -d "$VOL_DIR" 2>/dev/null || true
+    umount -d "$VOL_DIR"
     rm -f "$IMAGE_FILE"
-
-    flock -w 10 -e 200 -c "
-        /bin/echo \"\$(sed \"/${PROJ_NAME}/d\" /etc/fstab)\" > /etc/fstab
-    "
+    sed -i "\|${IMAGE_FILE}|d" /etc/fstab
 }
 
 _remove_dir() {
