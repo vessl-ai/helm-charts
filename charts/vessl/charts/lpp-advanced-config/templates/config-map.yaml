@@ -32,9 +32,9 @@ data:
             mountPropagation: Bidirectional
           - name: fstab
             mountPath: /etc/fstab
-          env:
-          - name: VOL_DIR_PARENT
-            value: {{ .Values.path.default }}
+        env:
+        - name: VOL_DIR_PARENT
+          value: {{ .Values.path.default }}
       volumes:
       - name: fstab
         hostPath:
