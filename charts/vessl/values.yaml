@@ -484,10 +484,11 @@ gpu-operator:
                   operator: In
                   values:
                     - "true"
-    gfd:
-      enabled: true
-    nfd:
-      enabled: false
+  
+  gfd:
+    enabled: true
+  nfd:
+    enabled: false
 
   migManager:
     enabled: true
