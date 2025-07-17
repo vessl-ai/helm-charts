@@ -8,12 +8,6 @@ dependencies:
 - name: prometheus-node-exporter
   repository: https://prometheus-community.github.io/helm-charts
   version: 4.44.0
-- name: dcgm-exporter
-  repository: https://nvidia.github.io/dcgm-exporter/helm-charts
-  version: 4.0.4
-- name: nvidia-device-plugin
-  repository: https://nvidia.github.io/k8s-device-plugin
-  version: 0.17.0
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 23.2.0
@@ -38,5 +32,8 @@ dependencies:
 - name: nginx-ingress
   repository: https://helm.nginx.com/stable
   version: 2.0.1
-digest: sha256:622816f0fc0ce258c42011f8924251c0d80a18b2eecba0e7b48265ee2bd542e9
-generated: "2025-03-06T15:25:48.729023+09:00"
+- name: gpu-operator
+  repository: https://nvidia.github.io/gpu-operator
+  version: v24.9.2
+digest: sha256:157aa0b596775104de359b1ae04d7b49983b0b0281b7e5950dc794e2f9938fe6
+generated: "2025-07-17T19:03:11.516573+09:00"
