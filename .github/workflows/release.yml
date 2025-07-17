@@ -34,7 +34,7 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-      
+
       - name: Set up Helm
         uses: azure/setup-helm@v3.5
         with:
@@ -51,6 +51,7 @@ jobs:
           helm repo add zot https://zotregistry.dev/helm-charts
           helm repo add harbor https://helm.goharbor.io
           helm repo add nginx-ingress https://helm.nginx.com/stable
+          helm repo add gpu-operator https://nvidia.github.io/gpu-operator/charts
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.5.0
         env:
