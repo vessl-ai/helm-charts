@@ -14,15 +14,18 @@ agent:
   insecureSkipTLSVerify: false
   region: "" # on-premise, <CLOUD_REGION>
   resourceSpecs: [] # this property is only used for the oci providerType
-#    - name: "a10-test"
-#      cpuLimit: 1
-#      memoryLimit: "1Gi"
-#      gpuLimit: 1
-#      priority: 1
-#      tolerations:
-#        - key: "nvidia.com/gpu.present"
-#          operator: "Exists"
-#          effect: "NoSchedule"
+  #    - name: "a10-test"
+  #      cpuLimit: 1
+  #      memoryLimit: "1Gi"
+  #      gpuLimit: 1
+  #      priority: 1
+  #      gpuType: "NVIDIA-A100-SXM4-80GB" # if MIG is enabled, this property is required
+  #      gpuSliceLimit: 1 # if MIG is enabled, this property is required
+  #      gpuSliceType: "nvidia.com/mig-2g.20gb" # if MIG is enabled, this property is required
+  #      tolerations:
+  #        - key: "nvidia.com/gpu.present"
+  #          operator: "Exists"
+  #          effect: "NoSchedule"
 
   nodeSelector: {}
   tolerations:
@@ -56,37 +59,6 @@ agent:
               - key: "v1.k8s.vessl.ai/dedicated"
                 operator: "In"
                 values: ["manager"]
-
-# https://github.com/NVIDIA/k8s-device-plugin/tree/main/deployments/helm/nvidia-device-plugin
-nvidia-device-plugin:
-  enabled: true
-  deviceListStrategy: volume-mounts
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
-              - key: "feature.node.kubernetes.io/pci-10de.present"
-                operator: "In"
-                values:
-                  - "true"
-          - matchExpressions:
-              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
-              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
-                operator: "In"
-                values:
-                  - "NVIDIA"
-          - matchExpressions:
-              # We allow a GFD deployment to be forced by setting the following label to "true"
-              - key: "nvidia.com/gpu.present"
-                operator: In
-                values:
-                  - "true"
-  gfd:
-    enabled: true
-  nfd:
-    enabled: false
 
 # https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
 nfd:
@@ -141,11 +113,11 @@ kube-state-metrics:
       v1.k8s.vessl.ai/managed: "true"
       v1.k8s.vessl.ai/type: kube-state-metrics
   metricLabelsAllowlist:
-  # This option makes `kube_pod_labels`, `kube_deployment_labels`, etc. contain all labels
-  # (including those like `label_v1_k8s_vessl_ai_partition="xxxx"`) of the Kubernetes object.
-  # This is used when aggregating values by Kubernetes resources' `*_vessl_ai_*` labels
-  # to provide metrics and graphs.
-  # The list should be extended when a new kind of resource requires label-joining.
+    # This option makes `kube_pod_labels`, `kube_deployment_labels`, etc. contain all labels
+    # (including those like `label_v1_k8s_vessl_ai_partition="xxxx"`) of the Kubernetes object.
+    # This is used when aggregating values by Kubernetes resources' `*_vessl_ai_*` labels
+    # to provide metrics and graphs.
+    # The list should be extended when a new kind of resource requires label-joining.
     - deployments=[*]
     - jobs=[*]
     - nodes=[*]
@@ -192,43 +164,6 @@ node-exporter:
       prometheus.io/scrape: "true"
       v1.k8s.vessl.ai/managed: "true"
       v1.k8s.vessl.ai/type: node-exporter
-
-# https://github.com/NVIDIA/dcgm-exporter/tree/main/deployment
-dcgm-exporter:
-  enabled: true
-  service:
-    annotations:
-      prometheus.io/scrape: "true"
-      v1.k8s.vessl.ai/managed: "true"
-      v1.k8s.vessl.ai/type: dcgm-exporter
-  serviceMonitor:
-    enabled: false
-  kubeletPath: "/var/lib/kubelet/pod-resources"
-  tolerations:
-    - operator: "Exists"
-      effect: "NoSchedule"
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
-              - key: "feature.node.kubernetes.io/pci-10de.present"
-                operator: "In"
-                values:
-                  - "true"
-          - matchExpressions:
-              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
-              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
-                operator: "In"
-                values:
-                  - "NVIDIA"
-          - matchExpressions:
-              # We allow a GFD deployment to be forced by setting the following label to "true"
-              - key: "nvidia.com/gpu.present"
-                operator: In
-                values:
-                  - "true"
 
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus
 prometheus-remote-write:
@@ -299,63 +234,71 @@ prometheus-remote-write:
   prometheus-pushgateway:
     enabled: false
   relabelConfigs:
-  - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
-    separator: ;
-    regex: Node;(.*)
-    target_label: node
-    replacement: ${1}
-    action: replace
-  - source_labels: [__meta_kubernetes_endpoint_address_target_kind, __meta_kubernetes_endpoint_address_target_name]
-    separator: ;
-    regex: Pod;(.*)
-    target_label: pod
-    replacement: ${1}
-    action: replace
-  - source_labels: [__meta_kubernetes_namespace]
-    separator: ;
-    regex: (.*)
-    target_label: namespace
-    replacement: $1
-    action: replace
-  - source_labels: [__meta_kubernetes_service_name]
-    separator: ;
-    regex: (.*)
-    target_label: service
-    replacement: $1
-    action: replace
-  - source_labels: [__meta_kubernetes_pod_name]
-    separator: ;
-    regex: (.*)
-    target_label: pod
-    replacement: $1
-    action: replace
-  - source_labels: [__meta_kubernetes_pod_container_name]
-    separator: ;
-    regex: (.*)
-    target_label: container
-    replacement: $1
-    action: replace
-  - source_labels: [__meta_kubernetes_service_name]
-    separator: ;
-    regex: (.*)
-    target_label: job
-    replacement: ${1}
-    action: replace
-  - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_partition"]
-    target_label: "vessl_partition"
-  - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_type"]
-    target_label: "vessl_type"
-  - separator: ;
-    regex: (.*)
-    target_label: endpoint
-    replacement: metrics
-    action: replace
+    - source_labels:
+        [
+          __meta_kubernetes_endpoint_address_target_kind,
+          __meta_kubernetes_endpoint_address_target_name,
+        ]
+      separator: ;
+      regex: Node;(.*)
+      target_label: node
+      replacement: ${1}
+      action: replace
+    - source_labels:
+        [
+          __meta_kubernetes_endpoint_address_target_kind,
+          __meta_kubernetes_endpoint_address_target_name,
+        ]
+      separator: ;
+      regex: Pod;(.*)
+      target_label: pod
+      replacement: ${1}
+      action: replace
+    - source_labels: [__meta_kubernetes_namespace]
+      separator: ;
+      regex: (.*)
+      target_label: namespace
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_service_name]
+      separator: ;
+      regex: (.*)
+      target_label: service
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_pod_name]
+      separator: ;
+      regex: (.*)
+      target_label: pod
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_pod_container_name]
+      separator: ;
+      regex: (.*)
+      target_label: container
+      replacement: $1
+      action: replace
+    - source_labels: [__meta_kubernetes_service_name]
+      separator: ;
+      regex: (.*)
+      target_label: job
+      replacement: ${1}
+      action: replace
+    - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_partition"]
+      target_label: "vessl_partition"
+    - source_labels: ["__meta_kubernetes_pod_label_v1_k8s_vessl_ai_type"]
+      target_label: "vessl_type"
+    - separator: ;
+      regex: (.*)
+      target_label: endpoint
+      replacement: metrics
+      action: replace
 
 # https://github.com/rancher/local-path-provisioner/tree/master/deploy/chart/local-path-provisioner
 local-path-provisioner:
   enabled: true
   storageClass:
-    name: "vessl-local-path"
+    name: "local-path"
     provisionerName: "rancher.io/local-path"
   helperImage:
     repository: "quay.io/vessl-ai/busybox"
@@ -493,11 +436,93 @@ prometheus-adapter:
       - seriesQuery: 'DCGM_FI_DEV_GPU_UTIL{pod!=""}'
         resources:
           overrides:
-            namespace: {resource: "namespace"}
-            pod: {resource: "pod"}
+            namespace: { resource: "namespace" }
+            pod: { resource: "pod" }
         name:
           as: "gpu_util"
         metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
 
 image-prepull:
   enabled: false
+
+# https://github.com/NVIDIA/gpu-operator/tree/master/charts/gpu-operator
+gpu-operator:
+  enabled: false
+
+  operator:
+    cleanupCRD: true
+
+  mig:
+    strategy: mixed # mixed / single / none
+
+  driver:
+    enabled: false
+
+  devicePlugin:
+    enabled: true
+    strategy: mixed # mixed / single / none
+    deviceListStrategy: volume-mounts
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
+                - key: "feature.node.kubernetes.io/pci-10de.present"
+                  operator: "In"
+                  values:
+                    - "true"
+            - matchExpressions:
+                # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+                - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+                  operator: "In"
+                  values:
+                    - "NVIDIA"
+            - matchExpressions:
+                # We allow a GFD deployment to be forced by setting the following label to "true"
+                - key: "nvidia.com/gpu.present"
+                  operator: In
+                  values:
+                    - "true"
+    gfd:
+      enabled: true
+    nfd:
+      enabled: false
+
+  migManager:
+    enabled: true
+    env:
+      - name: WITH_REBOOT
+        value: "false"
+    resources: {}
+  # MIG configuration
+  # Use "name" to either point to an existing ConfigMap or to create a new one with a list of configurations(i.e with create=true).
+  # Use "data" to build an integrated ConfigMap from a set of configurations as
+  # part of this helm chart. An example of setting "data" might be:
+  # config:
+  #   name: custom-mig-parted-configs
+  #   create: true
+  #   data:
+  #     config.yaml: |-
+  #       version: v1
+  #       mig-configs:
+  #         all-disabled:
+  #           - devices: all
+  #             mig-enabled: false
+  #         custom-mig:
+  #           - devices: [0]
+  #             mig-enabled: false
+  #           - devices: [1]
+  #              mig-enabled: true
+  #              mig-devices:
+  #                "1g.10gb": 7
+  #           - devices: [2]
+  #             mig-enabled: true
+  #             mig-devices:
+  #               "2g.20gb": 2
+  #               "3g.40gb": 1
+  #           - devices: [3]
+  #             mig-enabled: true
+  #             mig-devices:
+  #               "3g.40gb": 1
+  #               "4g.40gb": 1
