@@ -466,8 +466,23 @@ gpu-operator:
 
 
 ### Persistent Storage ###
+# Recommended: Enable hostpath-csi-driver for hostPath-based volumes.
 hostpath-csi-driver:
   enabled: true
+
+  # DaemonSet configuration
+  daemonSet:
+    # Custom CSI Driver container
+    customCsiDriver:
+      enabled: true
+      image:
+        repository: "quay.io/vessl-ai/hostpathplugin"
+        tag: "0.0.2"
+        pullPolicy: IfNotPresent
+      args:
+        - "--v=5"
+        - "--endpoint=$(CSI_ENDPOINT)"
+        - "--nodeid=$(KUBE_NODE_NAME)"
 
 # https://github.com/rancher/local-path-provisioner/tree/master/deploy/chart/local-path-provisioner
 local-path-provisioner:
