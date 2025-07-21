@@ -1,8 +1,8 @@
 apiVersion: v2
 name: vessl
 type: application
-version: 0.0.60
-appVersion: "0.6.30-rc2"
+version: 0.0.61
+appVersion: "0.6.30-rc4"
 dependencies:
 - name: node-feature-discovery
   version: "0.17.2"
@@ -51,3 +51,6 @@ dependencies:
   version: "v24.9.2"
   condition: gpu-operator.enabled
   repository: https://nvidia.github.io/gpu-operator
+- name: hostpath-csi-driver
+  version: "0.1.0"
+  condition: hostpath-csi-driver.enabled

@@ -294,48 +294,6 @@ prometheus-remote-write:
       replacement: metrics
       action: replace
 
-# https://github.com/rancher/local-path-provisioner/tree/master/deploy/chart/local-path-provisioner
-local-path-provisioner:
-  enabled: true
-  storageClass:
-    name: "local-path"
-    provisionerName: "rancher.io/local-path"
-  helperImage:
-    repository: "quay.io/vessl-ai/busybox"
-    tag: "21.10"
-  tolerations:
-    - key: "node-role.kubernetes.io/master"
-      value: ""
-      effect: "NoSchedule"
-    - key: "node-role.kubernetes.io/control-plane"
-      operator: "Exists"
-      effect: "NoSchedule"
-    - key: "v1.k8s.vessl.ai/dedicated"
-      operator: "Exists"
-      effect: "NoSchedule"
-  affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 1
-          preference:
-            matchExpressions:
-              - key: "node-role.kubernetes.io/master"
-                operator: "In"
-                values: [""]
-        - weight: 1
-          preference:
-            matchExpressions:
-              - key: "node-role.kubernetes.io/control-plane"
-                operator: "Exists"
-        - weight: 2
-          preference:
-            matchExpressions:
-              - key: "v1.k8s.vessl.ai/dedicated"
-                operator: "In"
-                values: ["manager"]
-  configmap:
-    create: true
-
 # https://github.com/nginx/kubernetes-ingress/blob/main/charts/nginx-ingress
 nginx-ingress:
   enabled: false
@@ -367,28 +325,6 @@ nginx-ingress:
                 - key: "v1.k8s.vessl.ai/dedicated"
                   operator: "In"
                   values: ["manager"]
-
-lpp-advanced-config:
-  enabled: false
-  xfs_quota:
-    enabled: true
-    size: 10g
-
-# https://github.com/longhorn/longhorn/tree/master/chart
-longhorn:
-  enabled: false
-  # https://longhorn.io/docs/1.5.1/advanced-resources/deploy/customizing-default-settings/#using-helm
-  persistence:
-    defaultClassReplicaCount: 1
-    defaultDataLocality: strict-local
-  defaultSettings:
-    defaultReplicaCount: 1
-    defaultDataLocality: strict-local
-    taintToleration: node-role.kubernetes.io/master=:NoSchedule; node-role.kubernetes.io/control-plane=:NoSchedule; v1.k8s.vessl.ai/dedicated:NoSchedule
-
-# https://github.com/vessl-ai/helm-charts/blob/main/charts/vessl/charts/harbor/values.yaml
-harbor:
-  enabled: false
 
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-adapter
 prometheus-adapter:
@@ -527,3 +463,88 @@ gpu-operator:
   #             mig-devices:
   #               "3g.40gb": 1
   #               "4g.40gb": 1
+
+
+### Persistent Storage ###
+# Recommended: Enable hostpath-csi-driver for hostPath-based volumes.
+hostpath-csi-driver:
+  enabled: true
+
+  # DaemonSet configuration
+  daemonSet:
+    # Custom CSI Driver container
+    customCsiDriver:
+      enabled: true
+      image:
+        repository: "quay.io/vessl-ai/hostpathplugin"
+        tag: "0.0.2"
+        pullPolicy: IfNotPresent
+      args:
+        - "--v=5"
+        - "--endpoint=$(CSI_ENDPOINT)"
+        - "--nodeid=$(KUBE_NODE_NAME)"
+
+# https://github.com/rancher/local-path-provisioner/tree/master/deploy/chart/local-path-provisioner
+local-path-provisioner:
+  enabled: false
+  storageClass:
+    name: "vessl-local-path"
+    provisionerName: "rancher.io/local-path"
+  helperImage:
+    repository: "quay.io/vessl-ai/busybox"
+    tag: "21.10"
+  tolerations:
+    - key: "node-role.kubernetes.io/master"
+      value: ""
+      effect: "NoSchedule"
+    - key: "node-role.kubernetes.io/control-plane"
+      operator: "Exists"
+      effect: "NoSchedule"
+    - key: "v1.k8s.vessl.ai/dedicated"
+      operator: "Exists"
+      effect: "NoSchedule"
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/master"
+                operator: "In"
+                values: [""]
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: "node-role.kubernetes.io/control-plane"
+                operator: "Exists"
+        - weight: 2
+          preference:
+            matchExpressions:
+              - key: "v1.k8s.vessl.ai/dedicated"
+                operator: "In"
+                values: ["manager"]
+  configmap:
+    create: true
+
+lpp-advanced-config:
+  enabled: false
+  xfs_quota:
+    enabled: true
+    size: 10g
+
+
+# https://github.com/longhorn/longhorn/tree/master/chart
+longhorn:
+  enabled: false
+  # https://longhorn.io/docs/1.5.1/advanced-resources/deploy/customizing-default-settings/#using-helm
+  persistence:
+    defaultClassReplicaCount: 1
+    defaultDataLocality: strict-local
+  defaultSettings:
+    defaultReplicaCount: 1
+    defaultDataLocality: strict-local
+    taintToleration: node-role.kubernetes.io/master=:NoSchedule; node-role.kubernetes.io/control-plane=:NoSchedule; v1.k8s.vessl.ai/dedicated:NoSchedule
+
+# https://github.com/vessl-ai/helm-charts/blob/main/charts/vessl/charts/harbor/values.yaml
+harbor:
+  enabled: false
