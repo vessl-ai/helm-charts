@@ -1,0 +1,16 @@
+name: lint
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  helm-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: aron-backend
+        uses: igabaydulin/helm-check-action@0.1.4
+        env:
+          CHART_LOCATION: ./charts/vessl
+          CHART_VALUES: ./charts/vessl/values.yaml
