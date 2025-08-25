@@ -8,6 +8,12 @@ dependencies:
 - name: prometheus-node-exporter
   repository: https://prometheus-community.github.io/helm-charts
   version: 4.44.0
+- name: dcgm-exporter
+  repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+  version: 4.0.4
+- name: nvidia-device-plugin
+  repository: https://nvidia.github.io/k8s-device-plugin
+  version: 0.17.0
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 23.2.0
@@ -38,5 +44,5 @@ dependencies:
 - name: hostpath-csi-driver
   repository: ""
   version: 0.1.0
-digest: sha256:3cd3d21dceb2a15a124668e71f4c260f82888cfbc0ab67b0493975346e05dfe2
-generated: "2025-07-21T15:05:29.60866+09:00"
+digest: sha256:17b96f7551069fe2e777095c4e43da7f9293ef58603da130402e2bc6de5aefee
+generated: "2025-08-25T11:22:39.873881+09:00"

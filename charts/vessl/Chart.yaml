@@ -4,53 +4,61 @@ type: application
 version: 0.0.61
 appVersion: "0.6.30-rc4"
 dependencies:
-- name: node-feature-discovery
-  version: "0.17.2"
-  alias: nfd
-  condition: nfd.enabled
-  repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
-- name: kube-state-metrics
-  version: "5.30.0"
-  condition: kube-state-metrics.enabled
-  repository: https://prometheus-community.github.io/helm-charts
-- name: prometheus-node-exporter
-  alias: node-exporter
-  version: "4.44.0"
-  condition: node-exporter.enabled
-  repository: https://prometheus-community.github.io/helm-charts
-- name: prometheus
-  alias: prometheus-remote-write
-  version: "23.2.0"
-  condition: prometheus-remote-write.enabled
-  repository: https://prometheus-community.github.io/helm-charts
-- name: longhorn
-  version: "1.5.1"
-  condition: longhorn.enabled
-  repository: https://charts.longhorn.io
-- name: local-path-provisioner
-  version: "0.0.24"
-  condition: local-path-provisioner.enabled
-- name: harbor
-  version: "1.0.1"
-  condition: harbor.enabled
-- name: prometheus-adapter
-  version: "4.9.0"
-  condition: prometheus-adapter.enabled
-  repository: https://prometheus-community.github.io/helm-charts
-- name: image-prepull
-  version: "0.1.0"
-  condition: image-prepull.enabled
-- name: lpp-advanced-config
-  version: "0.1.0"
-  condition: lpp-advanced-config.enabled
-- name: nginx-ingress
-  version: "2.0.1"
-  condition: nginx-ingress.enabled
-  repository: https://helm.nginx.com/stable
-- name: gpu-operator
-  version: "v24.9.2"
-  condition: gpu-operator.enabled
-  repository: https://nvidia.github.io/gpu-operator
-- name: hostpath-csi-driver
-  version: "0.1.0"
-  condition: hostpath-csi-driver.enabled
+  - name: node-feature-discovery
+    version: "0.17.2"
+    alias: nfd
+    condition: nfd.enabled
+    repository: https://kubernetes-sigs.github.io/node-feature-discovery/charts
+  - name: kube-state-metrics
+    version: "5.30.0"
+    condition: kube-state-metrics.enabled
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: prometheus-node-exporter
+    alias: node-exporter
+    version: "4.44.0"
+    condition: node-exporter.enabled
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: dcgm-exporter
+    version: "4.0.4"
+    condition: dcgm-exporter.enabled
+    repository: https://nvidia.github.io/dcgm-exporter/helm-charts
+  - name: nvidia-device-plugin
+    version: "0.17.0"
+    condition: nvidia-device-plugin.enabled
+    repository: https://nvidia.github.io/k8s-device-plugin
+  - name: prometheus
+    alias: prometheus-remote-write
+    version: "23.2.0"
+    condition: prometheus-remote-write.enabled
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: longhorn
+    version: "1.5.1"
+    condition: longhorn.enabled
+    repository: https://charts.longhorn.io
+  - name: local-path-provisioner
+    version: "0.0.24"
+    condition: local-path-provisioner.enabled
+  - name: harbor
+    version: "1.0.1"
+    condition: harbor.enabled
+  - name: prometheus-adapter
+    version: "4.9.0"
+    condition: prometheus-adapter.enabled
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: image-prepull
+    version: "0.1.0"
+    condition: image-prepull.enabled
+  - name: lpp-advanced-config
+    version: "0.1.0"
+    condition: lpp-advanced-config.enabled
+  - name: nginx-ingress
+    version: "2.0.1"
+    condition: nginx-ingress.enabled
+    repository: https://helm.nginx.com/stable
+  - name: gpu-operator
+    version: "v24.9.2"
+    condition: gpu-operator.enabled
+    repository: https://nvidia.github.io/gpu-operator
+  - name: hostpath-csi-driver
+    version: "0.1.0"
+    condition: hostpath-csi-driver.enabled
