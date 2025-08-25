@@ -60,51 +60,9 @@ agent:
                 operator: "In"
                 values: ["manager"]
 
-# https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
-nfd:
-  enabled: true
-  master:
-    tolerations:
-      - operator: "Exists"
-        effect: "NoSchedule"
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-                - key: "node-role.kubernetes.io/master"
-                  operator: "In"
-                  values: [""]
-          - weight: 1
-            preference:
-              matchExpressions:
-                - key: "node-role.kubernetes.io/control-plane"
-                  operator: "Exists"
-          - weight: 2
-            preference:
-              matchExpressions:
-                - key: "v1.k8s.vessl.ai/dedicated"
-                  operator: "In"
-                  values: ["manager"]
-    config:
-      extraLabelNs: ["nvidia.com"]
-  worker:
-    tolerations:
-      - operator: "Exists"
-        effect: "NoSchedule"
-    config:
-      sources:
-        pci:
-          deviceClassWhitelist:
-            - "02"
-            - "0200"
-            - "0207"
-            - "0300"
-            - "0302"
-          deviceLabelFields:
-            - "vendor"
-
+#############################
+# Monitoring ################
+#############################
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics
 kube-state-metrics:
   enabled: true
@@ -164,6 +122,43 @@ node-exporter:
       prometheus.io/scrape: "true"
       v1.k8s.vessl.ai/managed: "true"
       v1.k8s.vessl.ai/type: node-exporter
+
+dcgm-exporter:
+  enabled: true
+  service:
+    annotations:
+      prometheus.io/scrape: "true"
+      v1.k8s.vessl.ai/managed: "true"
+      v1.k8s.vessl.ai/type: dcgm-exporter
+  serviceMonitor:
+    enabled: false
+  kubeletPath: "/var/lib/kubelet/pod-resources"
+  tolerations:
+    - operator: "Exists"
+      effect: "NoSchedule"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
+              - key: "feature.node.kubernetes.io/pci-10de.present"
+                operator: "In"
+                values:
+                  - "true"
+          - matchExpressions:
+              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+                operator: "In"
+                values:
+                  - "NVIDIA"
+          - matchExpressions:
+              # We allow a GFD deployment to be forced by setting the following label to "true"
+              - key: "nvidia.com/gpu.present"
+                operator: In
+                values:
+                  - "true"
+
 
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus
 prometheus-remote-write:
@@ -294,38 +289,6 @@ prometheus-remote-write:
       replacement: metrics
       action: replace
 
-# https://github.com/nginx/kubernetes-ingress/blob/main/charts/nginx-ingress
-nginx-ingress:
-  enabled: false
-  controller:
-    image:
-      tag: 4.0.1-alpine
-    ingressClass:
-      name: vessl-nginx
-    service:
-      create: false
-    enableSnippets: true
-    affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            preference:
-              matchExpressions:
-                - key: "node-role.kubernetes.io/master"
-                  operator: "In"
-                  values: [""]
-          - weight: 1
-            preference:
-              matchExpressions:
-                - key: "node-role.kubernetes.io/control-plane"
-                  operator: "Exists"
-          - weight: 2
-            preference:
-              matchExpressions:
-                - key: "v1.k8s.vessl.ai/dedicated"
-                  operator: "In"
-                  values: ["manager"]
-
 # https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-adapter
 prometheus-adapter:
   enabled: false
@@ -378,18 +341,93 @@ prometheus-adapter:
           as: "gpu_util"
         metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>}) by (<<.GroupBy>>)
 
-image-prepull:
-  enabled: false
+##########################
+# GPU ####################
+##########################
+# https://github.com/NVIDIA/k8s-device-plugin/tree/main/deployments/helm/nvidia-device-plugin
+nvidia-device-plugin:
+  enabled: true
+  deviceListStrategy: volume-mounts
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              # On discrete-GPU based systems NFD adds the following label where 10de is te NVIDIA PCI vendor ID
+              - key: "feature.node.kubernetes.io/pci-10de.present"
+                operator: "In"
+                values:
+                  - "true"
+          - matchExpressions:
+              # On some Tegra-based systems NFD detects the CPU vendor ID as NVIDIA
+              - key: "feature.node.kubernetes.io/cpu-model.vendor_id"
+                operator: "In"
+                values:
+                  - "NVIDIA"
+          - matchExpressions:
+              # We allow a GFD deployment to be forced by setting the following label to "true"
+              - key: "nvidia.com/gpu.present"
+                operator: In
+                values:
+                  - "true"
+  gfd:
+    enabled: true
+  nfd:
+    enabled: false
 
-# https://github.com/NVIDIA/gpu-operator/tree/master/charts/gpu-operator
+# https://github.com/kubernetes-sigs/node-feature-discovery/tree/master/deployment/helm/node-feature-discovery
+nfd:
+  enabled: true
+  master:
+    tolerations:
+      - operator: "Exists"
+        effect: "NoSchedule"
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/master"
+                  operator: "In"
+                  values: [""]
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/control-plane"
+                  operator: "Exists"
+          - weight: 2
+            preference:
+              matchExpressions:
+                - key: "v1.k8s.vessl.ai/dedicated"
+                  operator: "In"
+                  values: ["manager"]
+    config:
+      extraLabelNs: ["nvidia.com"]
+  worker:
+    tolerations:
+      - operator: "Exists"
+        effect: "NoSchedule"
+    config:
+      sources:
+        pci:
+          deviceClassWhitelist:
+            - "02"
+            - "0200"
+            - "0207"
+            - "0300"
+            - "0302"
+          deviceLabelFields:
+            - "vendor"
+
+
+# Currently, GPU Operator is only used for using MIG.
+# https://github.com/NVIDIA/gpu-operator/blob/main/deployments/gpu-operator/values.yaml
 gpu-operator:
   enabled: false
 
   operator:
     cleanupCRD: true
-
-  mig:
-    strategy: mixed # mixed / single / none
 
   driver:
     enabled: false
@@ -420,14 +458,18 @@ gpu-operator:
                   operator: In
                   values:
                     - "true"
-  
+
   gfd:
     enabled: true
   nfd:
     enabled: false
 
+  # if you want to use MIG, set this to "mixed" or "single" and set migManager.enabled to true
+  mig:
+    strategy: none # mixed / single / none
+
   migManager:
-    enabled: true
+    enabled: false
     env:
       - name: WITH_REBOOT
         value: "false"
@@ -465,7 +507,9 @@ gpu-operator:
   #               "4g.40gb": 1
 
 
+##########################
 ### Persistent Storage ###
+##########################
 # Recommended: Enable hostpath-csi-driver for hostPath-based volumes.
 hostpath-csi-driver:
   enabled: true
@@ -532,7 +576,7 @@ lpp-advanced-config:
     enabled: true
     size: 10g
 
-
+# Deprecated
 # https://github.com/longhorn/longhorn/tree/master/chart
 longhorn:
   enabled: false
@@ -548,3 +592,42 @@ longhorn:
 # https://github.com/vessl-ai/helm-charts/blob/main/charts/vessl/charts/harbor/values.yaml
 harbor:
   enabled: false
+
+
+##########################
+# Additional Components  #
+##########################  
+image-prepull:
+  enabled: false
+
+# https://github.com/nginx/kubernetes-ingress/blob/main/charts/nginx-ingress
+nginx-ingress:
+  enabled: false
+  controller:
+    image:
+      tag: 4.0.1-alpine
+    ingressClass:
+      name: vessl-nginx
+    service:
+      create: false
+    enableSnippets: true
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/master"
+                  operator: "In"
+                  values: [""]
+          - weight: 1
+            preference:
+              matchExpressions:
+                - key: "node-role.kubernetes.io/control-plane"
+                  operator: "Exists"
+          - weight: 2
+            preference:
+              matchExpressions:
+                - key: "v1.k8s.vessl.ai/dedicated"
+                  operator: "In"
+                  values: ["manager"]
